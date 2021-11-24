@@ -11,5 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Sending Files to Github through R 
 
-- in order to push to github select the sile you want in Git, then press commit and write a short message. There will be a message saying that we are 1 move ahead of origin/main. Finally press the green arrow to push to Git. 
+- in order to push to github select the sile you want in Git, then press commit and write a short message. There will be a message saying that we are 1 move ahead of origin/main. Finally press the green arrow to push to Git.
+
+- for ADA - invite Dan and Sarah to repository 
 
