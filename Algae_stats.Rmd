@@ -218,8 +218,9 @@ ADD: Which distrubtion does it fit?
 ADD: f-test of variance
 
 
+PIVOT: 
 
-
+Collecting Alaria 
 
 
 
