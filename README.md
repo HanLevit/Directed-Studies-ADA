@@ -1,2 +1,4 @@
-# Directed-Studies-ADA
-Code for ADA work and directed studies results
+## Directed-Studies-ADA
+This repository holds code for ADA work and directed studies results.
+
+
