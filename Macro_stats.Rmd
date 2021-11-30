@@ -26,7 +26,7 @@ macro_trial1_data <- read.csv("macro_trial1_data.csv")
 ```{r}
 my_cols1 = c("20 kHz" = "orchid1", "Control" = "seagreen")
 
-macro_trial1_graph = ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
@@ -50,7 +50,8 @@ macro_trial1_tanks_graph = ggplot(macro_trial1_tanks, aes(x = Treatment, y = Set
   scale_color_manual(values = my_cols2) +
   scale_fill_manual(values = my_cols2) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
+  labs(x = "treatment", y = "number spores settled / concentration") +
+  theme(legend.position = "none") 
 
 macro_trial1_tanks_graph
 
@@ -213,17 +214,18 @@ macro_trial2_data <- read.csv("macro_trial2_data.csv")
 
 
 ```{r}
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
+my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
-macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
+  labs(x = "Treatment", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  theme(legend.position = "none") 
 
-macro_trial2_graph
 ```
 
 ### SETTLEMENT Analysis
@@ -339,17 +341,18 @@ macro_trial3_data <- read.csv("macro_trial3_data.csv")
 ```
 
 ```{r}
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
+my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
-macro_trial3_graph = ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
+  labs(x = "Treatment", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  theme(legend.position = "none") 
 
-macro_trial3_graph
 ```
 
 ```{r}
@@ -402,17 +405,18 @@ macro_trial4_data <- read.csv("macro_trial4_data.csv")
 ```
 
 ```{r}
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
+my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
-macro_trial4_graph = ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
+  labs(x = "Treatment", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  theme(legend.position = "none") 
 
-macro_trial4_graph
 ```
 
 ```{r}
@@ -544,6 +548,8 @@ ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement, fill = Treatmen
 ```{r}
 macro_trial234.mod <- lm(Settlement ~ Treatment, data = macro_trial2_3_4_data)
 summary(macro_trial234.mod)
+
+# not linear
 ```
 Multiple R-squared:  0.2484,	Adjusted R-squared:  0.2321 
 F-statistic: 15.21 on 1 and 46 DF,  p-value: 0.0003116
@@ -555,10 +561,20 @@ W = 0.90497, p-value = 0.0009134
 
 ```{r}
 fitDist(Settlement, data = macro_trial2_3_4_data, type = "realAll", try.gamlss = T) 
-histDist(macro_trial1_data$Settlement, "BCPEo")
+histDist(macro_trial2_3_4_data$Settlement, "BCPEo")
 ```
 Family:  c("BCPEo", "Box-Cox Power Exponential-orig.") 
 Fitting method: RS() 
+
+- gamlss model 
+- include time 
+- random(tank)
+- name them Tank A, B, C, D
+
+```{r}
+macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial2_3_4_data, family = "BCPEo")
+summary(macro_combined.mod)
+```
 
 ```{r}
 t.test(Settlement ~ Treatment, data = macro_trial2_3_4_data, 
@@ -599,7 +615,12 @@ library(patchwork)
 library(ggplot2)
 require(gridExtra)
 
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
+macro_trial2_data = read.csv("data/macro_trial2_data.csv")
+macro_trial3_data = read.csv("data/macro_trial3_data.csv")
+macro_trial4_data = read.csv("data/macro_trial4_data.csv")
+macro_trial2_3_4_data = read.csv("data/macro_trial2+3+4_combined.csv")
+
+my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
 macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
@@ -607,10 +628,10 @@ macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "Trial A", y = "Settlement (spores/ml)") +
-  theme(axis.title = element_text(size = 10)) +
+  labs(x = "Trial 2", y = "Spore Settlement") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
-# double check units here 
 
 macro_trial3_graph = ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
@@ -618,8 +639,9 @@ macro_trial3_graph = ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "Trial B", y = "Settlement (spores/ml)") +
-  theme(axis.title = element_text(size = 10)) +
+  labs(x = "Trial 3", y = "Spore Settlement") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
 macro_trial4_graph = ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
@@ -628,23 +650,23 @@ macro_trial4_graph = ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "Trial C", y = "Settlement (spores/ml)") +
-  theme(axis.title = element_text(size = 10)) +
+  labs(x = "Trial 4", y = "Spore Settlement") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
-
-
-my_cols6 = c("20kHz" = "orange2", "Control" = "blue3")
 
 combined_graph = ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols6) +
-  scale_fill_manual(values = my_cols6) + 
+  scale_color_manual(values = my_cols1) +
+  scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "Combined data", y = "Settlement (spores/ml)") +
-  theme(axis.title = element_text(size = 10)) +
+  labs(x = "Macrocystis pyrifera Combined Data", y = "Spore Settlement") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 # describe in figure caption
+# report spore settlement as numbers
 
 ```
 
