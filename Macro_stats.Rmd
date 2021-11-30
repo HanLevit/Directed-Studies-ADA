@@ -4,6 +4,7 @@ author: "Hannah Levit"
 date: "15/11/2021"
 output: html_document
 ---
+
 ```{r}
 library(ggplot2)
 library(tidyverse)
@@ -91,6 +92,7 @@ summary(trial1.mod)
 Adjusted R-squared:  0.5556 
 p-value: 0.0005553
 - significant difference because P < 0.05
+# compare everything to control - change writng so it says Sound 20kHz potentially
 
 ```{r}
 shapiro.test(macro_trial1_data$Settlement)
@@ -228,8 +230,13 @@ macro_trial2_graph
 ```{r}
 macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial2_data)
 summary(macro_trial2.mod)
+macro_trial2.mod$model
 ```
 F-statistic: 0.3955 on 1 and 14 DF, Adjusted R-squared:  -0.042  p-value: 0.5396
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)       0.0150417  0.0011151  13.489 2.06e-09 ***
+TreatmentControl -0.0009917  0.0015770  -0.629     0.54  
+In appendix 
 
 ```{r}
 shapiro.test(macro_trial2_data$Settlement)
@@ -247,6 +254,7 @@ t = 0.62885, df = 14, p-value = 0.5396
 95 percent confidence interval: -0.002390558  0.004373891
   mean in group 20kHz: 0.01504167
   mean in group Control: 0.01405000 
+  
               
 ```{r}
 macro_trial2.aov <- aov(Settlement ~ Treatment, data = macro_trial2_data)
@@ -633,16 +641,17 @@ combined_graph = ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement
   scale_color_manual(values = my_cols6) +
   scale_fill_manual(values = my_cols6) + 
   theme_classic() +
-  labs(x = "Combined data (trial 2, 3, 4)", y = "Settlement (spores/ml)") +
+  labs(x = "Combined data", y = "Settlement (spores/ml)") +
   theme(axis.title = element_text(size = 10)) +
   theme(legend.position = "none") 
+# describe in figure caption
 
 ```
 
 ```{r}
 library(patchwork)
-spore_settlement = (macro_trial2_graph | macro_trial3_graph | macro_trial4_graph) / (combined_graph)
-spore_settlement+ plot_annotation(tag_levels = 'A')
+spore_settlement_macro = (macro_trial2_graph | macro_trial3_graph | macro_trial4_graph) / (combined_graph)
+spore_settlement_macro+ plot_annotation(tag_levels = 'A')
 
 ```
 
@@ -651,6 +660,9 @@ spore_settlement+ plot_annotation(tag_levels = 'A')
 ## Questions
 
 - PCAs are good at dealing with batch effects!!!! good to know 
+- need help with non parametric tests to run
 - is units of settlement supposed to be spores/ml?
 - spores over concentration so its spores^2/ml? that's weird lol - ie I don't 
 take the water in the tanks into consideration
+  
+  
