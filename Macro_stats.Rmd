@@ -12,145 +12,199 @@ library(DHARMa)
 library(mgcv)
 library(fitdistrplus)
 library(goft)
+# install.packages(gamlss)
 library(gamlss)
 library(patchwork)
 library(MASS)
 ```
 
-#### SETTLEMENT & GERMINATION TRIAL A
+#### SETTLEMENT TRIAL 1
 
 ```{r}
-macro_trial1_data <- read.csv("macro_trial1_data.csv")
+# loading trial 1 data 
+# note the treatment was done with a different batch of spores from the control 
+# and thus the data is skewed and does not represent the effect of sound - not
+# included in combined counts of data
+# note data is a decimal instead of a count because i divided by concentration 
+# due to different batches used
+macro_trial1_data <- read.csv("data/macro_trial1_data.csv")
 ```
 
 ```{r}
-my_cols1 = c("20 kHz" = "orchid1", "Control" = "seagreen")
+# loading colours for the graph
+my_cols1 = c("Control" = "seagreen", "Sound" = "orchid1")
+# italicizing only the species name in the title
+my_x_title = expression(paste(italic("Macrocystis pyrifera"), " Trial 1"))
 
+# loading graph plotting settlement in sound treatment v control
+# QUESTION should i plot logged data???
 ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
-
-macro_trial1_graph
-```
-
-```{r}
-macro_trial1_tanks <- read.csv("macro_trial1_tanks.csv")
-```
-
-```{r}
-my_cols2 = c("20 kHz A" = "orchid1", "20 kHz B" = "lightpink1","Control A" = "seagreen", "Control B" = "springgreen3")
-
-macro_trial1_tanks_graph = ggplot(macro_trial1_tanks, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols2) +
-  scale_fill_manual(values = my_cols2) + 
-  theme_classic() +
-  labs(x = "treatment", y = "number spores settled / concentration") +
+  labs(x = my_x_title, y = "Settlement / Concentration") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
-macro_trial1_tanks_graph
-
 ```
-
-```{r}
-macro_control1_tanks <- read.csv("macro_control1_tanks.csv")
-```
-
-```{r}
-macro_control1.mod <- lm(Value ~ Label, data = macro_control1_tanks)
-summary(macro_control1.mod)
-```
-Residual standard error: 0.002151 on 6 degrees of freedom
-Multiple R-squared:  0.1214,	Adjusted R-squared:  -0.02501 
-F-statistic: 0.8292 on 1 and 6 DF,  p-value: 0.3976
-
-```{r}
-macro_treatment1_tanks <- read.csv("macro_treatment1_tanks.csv")
-```
-
-```{r}
-treatment1.mod <- lm(Value ~ Label, data = macro_treatment1_tanks)
-summary(treatment1.mod)
-```
-Residual standard error: 0.0001801 on 6 degrees of freedom
-Multiple R-squared:  0.6198,	Adjusted R-squared:  0.5565 
-F-statistic: 9.783 on 1 and 6 DF,  p-value: 0.02038
-- p is less than 0.05!! significant difference between tanks
-
 
 
 ### SETTLEMENT Analysis
 
 ```{r}
-trial1.mod <- lm(Settlement ~ Treatment, data = macro_trial1_data)
-summary(trial1.mod)
-```
-Adjusted R-squared:  0.5556 
-p-value: 0.0005553
-- significant difference because P < 0.05
-# compare everything to control - change writng so it says Sound 20kHz potentially
-
-```{r}
+# using Shapiro-Wilks test to test for normality 
+# if p < 0.05, data is not normal
 shapiro.test(macro_trial1_data$Settlement)
 ```
 Shapiro test: W = 0.82075, p-value = 0.005206
-
-- not normal -> use fitDist function 
-
-Best distribution: Family:  c("GG", "generalised Gamma Lopatatsidis-Green") 
-Fitting method: "nlminb" 
+Not normal -> try transforming data
 
 ```{r}
-fitDist(Settlement, data = macro_trial1_data, type = "realAll", try.gamlss = T) 
-histDist(macro_trial1_data$Settlement, "GG")
+# log transforming the data to see if it better fits normal distribution - note
+# the "M" refers to Macroystis data
+transformed_trial_M1 <- macro_trial1_data %>%
+  mutate(logSettlement = log(Settlement))
+
+# testing for normality on transformed data
+shapiro.test(transformed_trial_M1$logSettlement)
 ```
-real0to1 in fit dist is good for data from 0 to 1 - ie proportion of germination
+W = 0.90997, p-value = 0.1162
+Normal - can now run a linear model on it
+
 
 ```{r}
-t.test(Settlement ~ Treatment, data = macro_trial1_data, alternative = "two.sided", var.equal = T, conf.level = 0.95)
+# Using gamlss to find which distribution best fits data
+fitDist(logSettlement, data = transformed_trial_M1, type = "realAll", try.gamlss = T) 
+# Best distribution: Family:  c("SN2", "skew normal type 2") 
+# normal 
+
+# visualizing the distribution
+histDist(transformed_trial_M1$logSettlement, "SN2")
+```
+
+
+```{r}
+# diff btwn t test, anova, and linear model?
+macro_trial1.mod <- lm(logSettlement ~ Treatment, data = transformed_trial_M1)
+summary(macro_trial1.mod)
 
 # assuming normality testing similarity of means
+t.test(logSettlement ~ Treatment, data = transformed_trial_M1, alternative = "two.sided", var.equal = T, conf.level = 0.95)
 ```
-t = 4.4445, df = 14, p-value = 0.0005553
+t = 7.0771, df = 14, p-value = 5.532e-06
 95 percent confidence interval:
-  0.001741043   0.004988596
-mean in group Control: 0.005634602 
-mean in group Treatment 1: 0.002269783 
+ 0.6025079 1.1265007
+mean in group Control: -5.229633
+mean in group Treatment 1: -6.094138 
               
 ```{r}
-macro_trial1.aov <- aov(Settlement ~ Treatment, data = macro_trial1_data)
+macro_trial1.aov <- aov(logSettlement ~ Treatment, data = transformed_trial_M1)
 summary(macro_trial1.aov)
-
-# assuming normality so not as helpful
 ```
-            Df    Sum Sq   Mean Sq F value   Pr(>F)    
-Treatment    1 4.529e-05 4.529e-05   19.75 0.000555 ***
-Residuals   14 3.210e-05 2.290e-06 
+            Df Sum Sq Mean Sq F value   Pr(>F)    
+Treatment    1 2.9895  2.9895   50.09 5.53e-06 ***
+Residuals   14 0.8356  0.0597 
 
 ```{r}
-var.test(Settlement ~ Treatment, macro_trial1_data, 
+# testing for variance in data 
+var.test(logSettlement ~ Treatment, transformed_trial_M1, 
          alternative = "two.sided")
 ```
-F = 0.01621, num df = 7, denom df = 7, p-value = 1.851e-05
-95 percent confidence interval: 0.003245242 0.080965929
-ratio of variances: 0.01620969 
+F = 7.695, num df = 7, denom df = 7, p-value = 0.01522
+95 percent confidence interval: 1.540572  38.435905
+ratio of variances: 7.695016 
+
+
+## COMPARING TANKS TRIAL 1
+```{r}
+# loading data for settlement in tanks 
+# make a data set that includes tanks and use in all! consider time
+macro_trial1_data <- read.csv("data/macro_trial1_data.csv")
+
+# repeated code from above in case I only want to run this section
+transformed_trial_M1 <- macro_trial1_data %>%
+  mutate(logSettlement = log(Settlement))
+```
+
+```{r}
+# loading colours for treatments and tanks
+my_cols2 = c("A" = "orchid1", "B" = "lightpink1","C" = "seagreen", "D" = "springgreen3")
+
+my_x_title_2 = expression(paste(italic("Macrocystis pyrifera"), " Trial 1 - Tanks"))
+# graphing the difference in settlement depending on tanks
+# Treatment: tank A + B, Control: tank C + D
+ggplot(transformed_trial_M1, aes(x = Tank, y = logSettlement, fill = Tank)) + 
+  geom_point(aes(colour = Tank), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.7) +
+  scale_color_manual(values = my_cols2) +
+  scale_fill_manual(values = my_cols2) + 
+  theme_classic() +
+  labs(x = my_x_title_2, y = "log(Settlement / Concentration)") +
+  theme(axis.title = element_text(size = 13)) +
+  #scale_x_discrete(labels = c("Sound A", "Sound B", "Control C", "Control D")) +
+  theme(legend.position = "none") 
+
+```
+
+```{r}
+# filtering data so we are only looking at control tanks - to compare settlment 
+# between tanks C and D
+macro_control1_tanks <- transformed_trial_M1 %>%
+  filter(Treatment == "Control", .preserve = FALSE)
+
+```
+
+```{r}
+# testing for normality on transformed data in only control 
+shapiro.test(macro_control1_tanks$logSettlement)
+# W = 0.8832, p-value = 0.202
+# normal distribution
+
+# running a linear model to look for patterns and significance
+macro_control1.mod <- lm(logSettlement ~ Tank, data = macro_control1_tanks)
+summary(macro_control1.mod)
+```
+Adjusted R-squared:  -0.06624 
+F-statistic: 0.5651 on 1 and 6 DF,  p-value: 0.4806
+
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  -5.1404     0.1678 -30.632 8.03e-08 ***
+TankD        -0.1784     0.2373  -0.752    0.481 
+
+```{r}
+# filtering data so we are only looking at sound treatment  tanks - to c
+# compare settlment between tanks A and B
+macro_treatment1_tanks <- transformed_trial_M1 %>%
+  filter(Treatment == "Sound", .preserve = FALSE)
+
+```
+
+```{r}
+# running a linear model to look for patterns and significance
+treatment1.mod <- lm(logSettlement ~ Tank, data = macro_treatment1_tanks)
+summary(treatment1.mod)
+```
+Adjusted R-squared:  0.5786 
+F-statistic: 10.61 on 1 and 6 DF,  p-value: 0.0173
+
+            Estimate Std. Error  t value Pr(>|t|)    
+(Intercept) -6.00653    0.03803 -157.944 4.35e-12 ***
+TankB       -0.17521    0.05378   -3.258   0.0173 * 
 
 
 #### TRIAL 1 - GERMINATING SPORES 
 
 ```{r}
-macro_trial1_germinating_ratio <- read.csv("macro_trial1_germinating_ratio.csv")
+macro_trial1_germinating_ratio <- read.csv("data/macro_trial1_germinating_ratio.csv")
 ```
 
 ```{r}
-my_cols3 = c("20 kHz" = "orange1", "control" = "royalblue2")
+my_cols3 = c("Sound" = "orange1", "Control" = "royalblue2")
 
-proportion_germ_trial1_graph = ggplot(macro_trial1_germinating_ratio, aes(x = Treatment, y = Germinating.Settled, fill = Treatment)) + 
+ggplot(macro_trial1_germinating_ratio, aes(x = Treatment, y = Germinating.Settled, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols3) +
@@ -158,10 +212,22 @@ proportion_germ_trial1_graph = ggplot(macro_trial1_germinating_ratio, aes(x = Tr
   theme_classic() +
   labs(x = "treatment", y = "spores germinating / settled")
 
-proportion_germ_trial1_graph
 ```
 
 ### GERMINATING Analysis
+
+```{r}
+shapiro.test(macro_trial1_germinating_ratio$Germinating.Settled)
+```
+W = 0.97902, p-value = 0.226
+
+  NORMAL DISTRIBUTION 
+  - can use linear model and t test 
+  - do bartlet test if variance is equal, anova if not
+  - need to do??
+
+If other germination data is not normal:
+(real0to1 in fit dist is good for data from 0 to 1 - ie proportion of germination)
 
 ```{r}
 macro_germinating_trial1.mod <- lm(Germinating.Settled ~ Treatment, 
@@ -182,16 +248,6 @@ t = -1.0283, df = 76, p-value = 0.3071
 mean in group 20 kHz: 0.5108839 
 mean in group control: 0.5405457
                          
-```{r}
-shapiro.test(macro_trial1_germinating_ratio$Germinating.Settled)
-```
-W = 0.97902, p-value = 0.226
-
-  NORMAL DISTRIBUTION 
-  - can use linear model and t test 
-  - do bartlet test if variance is equal, anova if not
-  - need to do??
-
 
 ```{r}
 var.test(Germinating.Settled ~ Treatment, macro_trial1_germinating_ratio, 
@@ -204,18 +260,21 @@ ratio of variances:  1.005251
 
 
 
------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 ### SPORE SETTLEMENT TRIAL 2
 
 ```{r}
-macro_trial2_data <- read.csv("macro_trial2_data.csv")
+# loading settlement data for trial 2 (one treatment, one control)
+macro_trial2_data <- read.csv("data/macro_trial2_data.csv")
 ```
 
 
 ```{r}
+# making colours for the boxplot
 my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
+# loading the trial 2 settlement box plot
 ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
@@ -234,10 +293,12 @@ macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial2_data)
 summary(macro_trial2.mod)
 macro_trial2.mod$model
 ```
-F-statistic: 0.3955 on 1 and 14 DF, Adjusted R-squared:  -0.042  p-value: 0.5396
-                   Estimate Std. Error t value Pr(>|t|)    
-(Intercept)       0.0150417  0.0011151  13.489 2.06e-09 ***
-TreatmentControl -0.0009917  0.0015770  -0.629     0.54  
+Adjusted R-squared:  -0.042 
+F-statistic: 0.3955 on 1 and 14 DF,  p-value: 0.5396
+
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      42.150      3.345  12.600 4.99e-09 ***
+TreatmentSound    2.975      4.731   0.629     0.54 
 In appendix 
 
 ```{r}
@@ -253,9 +314,9 @@ t.test(Settlement ~ Treatment, data = macro_trial2_data,
 # assuming normality testing similarity of means
 ```
 t = 0.62885, df = 14, p-value = 0.5396
-95 percent confidence interval: -0.002390558  0.004373891
-  mean in group 20kHz: 0.01504167
-  mean in group Control: 0.01405000 
+95 percent confidence interval:  -13.121673   7.171673
+  mean in group 20kHz:  45.125 
+  mean in group Control: 42.150 
   
               
 ```{r}
@@ -264,18 +325,18 @@ summary(macro_trial2.aov)
 
 # assuming normality so not as helpful
 ```
-            Df    Sum Sq   Mean Sq F value Pr(>F)
-Treatment    1 3.930e-06 3.934e-06   0.395   0.54
-Residuals   14 1.393e-04 9.947e-06   
+            Df Sum Sq Mean Sq F value Pr(>F)
+Treatment    1   35.4   35.40   0.395   0.54
+Residuals   14 1253.3   89.52 
 
 ```{r}
 var.test(Settlement ~ Treatment, data = macro_trial2_data, 
          alternative = "two.sided")
 
 ```
-F = 4.6975, num df = 7, denom df = 7, p-value = 0.05861
-95 percent confidence interval:  0.9404567   23.4635649
-ratio of variances: 4.697496 
+F = 0.21288, num df = 7, denom df = 7, p-value = 0.05861
+95 percent confidence interval:  0.04261927 1.06331331
+ratio of variances: 0.2128794 
 
 ##### DIFFERENCE IN TANKS Trial 2
 
@@ -334,16 +395,17 @@ F-statistic: 0.05937 on 1 and 6 DF,  p-value: 0.8156
 
 -----------------------------------------------------------------------------  
   
-### SPORE SETTLEMENT TRIAL 3
+### SPORE SETTLEMENT TRIAL 2
 
 ```{r}
-macro_trial3_data <- read.csv("macro_trial3_data.csv")
+# macro settlement in trial 2 (two rounds of treatment, one control)
+macro_trial3_4_data <- read.csv("data/macro_trial3_4_data.csv")
 ```
 
 ```{r}
 my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
-ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
@@ -356,23 +418,29 @@ ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
 ```
 
 ```{r}
-macro_trial3.mod <- lm(Settlement ~ Treatment, data = macro_trial3_data)
-summary(macro_trial3.mod)
+macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial3_4_data)
+summary(macro_trial2.mod)
 ```
-F-statistic: 42.76 on 1 and 14 DF,  Adjusted R-squared:  0.7357 p-value: 1.314e-05
+Adjusted R-squared:  0.5992 
+F-statistic: 35.39 on 1 and 22 DF,  p-value: 5.489e-06
+
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      67.400      7.035   9.580 2.62e-09 ***
+TreatmentSound   51.259      8.616   5.949 5.49e-06 ***
 
 ```{r}
-shapiro.test(macro_trial3_data$Settlement)
+shapiro.test(macro_trial3_4_data$Settlement)
 ```
-W = 0.9276, p-value = 0.2233
+W = 0.95047, p-value = 0.2773
+normal
 
 ```{r}
-t.test(Settlement ~ Treatment, data = macro_trial3_data, 
+t.test(Settlement ~ Treatment, data = macro_trial3_4_data, 
        alternative = "two.sided", var.equal = T, conf.level = 0.95)
 
 # assuming normality testing similarity of means
 ```
-t = 6.5391, df = 14, p-value = 1.314e-05
+t = -5.949, df = 22, p-value = 5.489e-06
 95 percent confidence interval: 0.01247693  0.02465641
 mean in group 20kHz:  0.04103333   
 mean in group Control: 0.02246667 
@@ -527,41 +595,51 @@ var.test(Settlement ~ Treatment, data = macro_trial1_2_combined,
 ####COMBINED TRIALS - no batch effect trial
 
 ```{r}
-macro_trial2_3_4_data <- read.csv("macro_trial2+3+4_combined.csv")
+# loading data of all trials combined (subtract trial 1)
+macro_trial_all_data <- read.csv("data/macro_trial2+3+4_combined.csv")
 
 ```
 
 ```{r}
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
+# loading colours for the following graph
+my_cols1 = c("Sound" = "orchid1", "Control" = "seagreen")
 
-ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+# plotting graph of all viable data from the macrocystis trials - without trial 1
+ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
+  labs(x = "M. pyrifera Combined Data", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  theme(legend.position = "none") 
 
 ```
 
 ## Analysis
 ```{r}
-macro_trial234.mod <- lm(Settlement ~ Treatment, data = macro_trial2_3_4_data)
-summary(macro_trial234.mod)
-
-# not linear
-```
-Multiple R-squared:  0.2484,	Adjusted R-squared:  0.2321 
-F-statistic: 15.21 on 1 and 46 DF,  p-value: 0.0003116
-
-```{r}
+# testing if the data fits a normal distribution
 shapiro.test(macro_trial2_3_4_data$Settlement)
 ```
-W = 0.90497, p-value = 0.0009134
+W = 0.89575, p-value = 0.001441
+# Not a normal distribution!
 
 ```{r}
-fitDist(Settlement, data = macro_trial2_3_4_data, type = "realAll", try.gamlss = T) 
-histDist(macro_trial2_3_4_data$Settlement, "BCPEo")
+# log transforming the data to see if it now fits a normal distribution
+transformed_all_data <- macro_trial2_3_4_data %>%
+  mutate(logSettlement = log(Settlement))
+
+shapiro.test(transformed_all_data$logSettlement)
+# W = 0.9219, p-value = 0.008842 
+# still not normal, further modelling necessary 
+```
+
+
+```{r}
+# Using gamlss to find which distribution best models my data
+fitDist(Settlement, data = macro_trial_all_data, type = "realAll", try.gamlss = T) 
+histDist(macro_trial_all_data$Settlement, "BCPEo")
 ```
 Family:  c("BCPEo", "Box-Cox Power Exponential-orig.") 
 Fitting method: RS() 
@@ -572,9 +650,35 @@ Fitting method: RS()
 - name them Tank A, B, C, D
 
 ```{r}
+ev_test(beasts$danger) # sig diff from norm distribution, onot a good fit
+#Correlation test of fit for the gumbel distribution
+#R = 0.91185, p-value = 0.0006882
+exp_test(beasts$danger) # sig
+#Test for exponentially based on a transformation to uniformity
+#T = -6.4506, p-value < 2.2e-16
+gamma_test(beasts$danger) # not sig - therefore should test fit
+#Test of fit for the Gamma distribution
+#V = -0.055875, p-value = 0.9685
+lnorm_test(beasts$danger) # sig
+#Test for the lognormal distribution based on a transformation to normality
+#p-value = 0.02797
+normal_test(beasts$danger) # ns - test fit
+#Correlation test for normality
+#R = 0.99284, p-value = 0.09112
+# - alternative hypothesis: beasts$danger does not follow a normal distribution.
+weibull_test(beasts$danger) # ns - test fit
+#Test for the Weibull distribution
+#p-value = 0.252
+```
+
+
+```{r}
 macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial2_3_4_data, family = "BCPEo")
 summary(macro_combined.mod)
 ```
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      -3.468e+00  7.926e-05  -43755   <2e-16 ***
+TreatmentControl -3.909e-01  1.121e-04   -3487   <2e-16
 
 ```{r}
 t.test(Settlement ~ Treatment, data = macro_trial2_3_4_data, 
@@ -616,9 +720,8 @@ library(ggplot2)
 require(gridExtra)
 
 macro_trial2_data = read.csv("data/macro_trial2_data.csv")
-macro_trial3_data = read.csv("data/macro_trial3_data.csv")
-macro_trial4_data = read.csv("data/macro_trial4_data.csv")
-macro_trial2_3_4_data = read.csv("data/macro_trial2+3+4_combined.csv")
+macro_trial3_4_data = read.csv("data/macro_trial3_4_data.csv")
+macro_trial_all_data = read.csv("data/macro_trial2+3+4_combined.csv")
 
 my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
 
@@ -633,7 +736,7 @@ macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
-macro_trial3_graph = ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+macro_trial3_4_graph = ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
@@ -644,18 +747,8 @@ macro_trial3_graph = ggplot(macro_trial3_data, aes(x = Treatment, y = Settlement
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
-macro_trial4_graph = ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
-  theme_classic() +
-  labs(x = "Trial 4", y = "Spore Settlement") +
-  theme(axis.title = element_text(size = 13)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
-  theme(legend.position = "none") 
 
-combined_graph = ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+combined_graph = ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols1) +
@@ -672,8 +765,132 @@ combined_graph = ggplot(macro_trial2_3_4_data, aes(x = Treatment, y = Settlement
 
 ```{r}
 library(patchwork)
-spore_settlement_macro = (macro_trial2_graph | macro_trial3_graph | macro_trial4_graph) / (combined_graph)
+spore_settlement_macro = (macro_trial2_graph | macro_trial3_4_graph) / (combined_graph)
 spore_settlement_macro+ plot_annotation(tag_levels = 'A')
+
+```
+
+-----------------------------------------------------------------------------
+
+### GERMINATION ANALYSIS
+
+```{r}
+macro_germination_all <- read.csv("data/macro_germination.csv")
+```
+
+```{r}
+my_cols3 = c("A Control" = "red1", "A Treatment" = "red2", 
+             "B Control" = "pink1", "B Treatment" = "pink2",
+             "C Control" = "blue1", "C Treatment" = "blue2")
+
+ggplot(macro_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
+  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.7) +
+  scale_color_manual(values = my_cols3) +
+  scale_fill_manual(values = my_cols3) + 
+  theme_classic() +
+  labs(x = "Treatment", y = "Spores germinated / settled") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control 1", "Treatment 1", "Control 2",
+                              "Treatment 2", "Control 3", "Treatment 3")) +
+  theme(legend.position = "none") 
+
+```
+
+
+### GERMINATING Analysis
+
+```{r}
+macro_germination_trial_1 <- macro_germination_all %>%
+  filter(Treatment == "A Control" | Treatment == "A Treatment", .preserve = FALSE) 
+
+macro_germination_trial_2 <- macro_germination_all %>%
+  filter(Treatment == "B Control" | Treatment == "B Treatment", .preserve = FALSE)
+
+macro_germination_trial_3 <- macro_germination_all %>%
+  filter(Treatment == "C Control" | Treatment == "C Treatment", .preserve = FALSE)
+```
+
+
+```{r}
+# testing for normality in trial 1
+shapiro.test(macro_germination_trial_1$Ratio)
+# W = 0.97902, p-value = 0.226 -> NORMAL
+
+# testing for normality in trial 2
+shapiro.test(macro_germination_trial_2$Ratio)
+# W = 0.99224, p-value = 0.9163 -> NORMAL
+
+# testing for normality in trial 3
+shapiro.test(macro_germination_trial_3$Ratio)
+# W = 0.96522, p-value = 0.003578 -> NOT NORMAL
+```
+
+
+
+```{r}
+# running a linear model on trial 1 germination proportion - assuming normality
+# numerical and categorical variable (ratio and treatment respectively)
+macro_germinating_trial1.mod <- lm(Ratio ~ Treatment, 
+                      data = macro_germination_trial_1)
+summary(macro_germinating_trial1.mod)
+```
+Adjusted R-squared:  0.0007447 
+F-statistic: 1.057 on 1 and 76 DF,  p-value: 0.3071
+
+
+```{r}
+# running a linear model on trial 2 germination proportion - assuming normality
+macro_germinating_trial2.mod <- lm(Ratio ~ Treatment, 
+                      data = macro_germination_trial_2)
+summary(macro_germinating_trial2.mod)
+```
+not sig
+Adjusted R-squared:  0.01793 
+F-statistic: 2.443 on 1 and 78 DF,  p-value: 0.1221
+
+```{r}
+# tranforming trial 3 data because it doesn't fit the normal distribution
+transformed_macro_germ_3 <- macro_germination_trial_3 %>%
+  mutate(logRatio = log(Ratio))
+
+# testing for normality of transformed data
+shapiro.test(transformed_macro_germ_3$Ratio)
+# W = 0.96522, p-value = 0.003578 
+# still not normal
+# Using fitdist to model correct distribution of transformed data
+fitDist(logRatio, data = transformed_macro_germ_3, type = "realAll", try.gamlss = T) 
+# didn't run??
+
+# trying to fit the un-transformed data to a distribution
+fitDist(Ratio, data = macro_germination_trial_3, type = "realAll", try.gamlss = T) 
+#Family:  c("NET", "Normal Exponential t") 
+#Fitting method: "nlminb" 
+
+# visualizing the distribution in a histogram
+histDist(macro_germination_trial_3$Ratio, "NET")
+```
+
+
+```{r}
+var.test(Ratio ~ Treatment, macro_germination_trial_1, 
+         alternative = "two.sided")
+# F = 0.99478, num df = 37, denom df = 39, p-value = 0.9895
+# 95 percent confidence interval: 0.5229668  1.9027493
+# sample estimates: 0.9947763 
+         
+var.test(Ratio ~ Treatment, macro_germination_trial_2, 
+         alternative = "two.sided")
+# F = 0.60716, num df = 39, denom df = 39, p-value = 0.1235
+# 95 percent confidence interval: 0.3211285   1.1479759
+# sample estimates: 0.6071637 
+         
+
+var.test(Ratio ~ Treatment, macro_germination_trial_3, 
+         alternative = "two.sided")
+# F = 2.7221, num df = 39, denom df = 78, p-value = 0.0001709
+# 95 percent confidence interval: 1.610807  4.840005
+# sample estimates: 2.722068 
 
 ```
 
