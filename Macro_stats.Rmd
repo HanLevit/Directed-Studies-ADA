@@ -59,7 +59,7 @@ ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
 # if p < 0.05, data is not normal
 shapiro.test(macro_trial1_data$Settlement)
 ```
-Shapiro test: W = 0.82075, p-value = 0.005206
+Shapiro test: W = 0.79773, p-value = 4.103e-09
 Not normal -> try transforming data
 
 ```{r}
@@ -73,6 +73,9 @@ shapiro.test(transformed_trial_M1$logSettlement)
 ```
 W = 0.90997, p-value = 0.1162
 Normal - can now run a linear model on it
+
+AFTER ADDING MORE DATA CHANGED: W = 0.9547, p-value = 0.006468
+REDO LATER!!!!
 
 
 ```{r}
@@ -99,6 +102,10 @@ t = 7.0771, df = 14, p-value = 5.532e-06
  0.6025079 1.1265007
 mean in group Control: -5.229633
 mean in group Treatment 1: -6.094138 
+
+Changed:
+Adjusted R-squared:  0.6489 
+F-statistic:   147 on 1 and 78 DF,  p-value: < 2.2e-16
               
 ```{r}
 macro_trial1.aov <- aov(logSettlement ~ Treatment, data = transformed_trial_M1)
@@ -124,27 +131,24 @@ ratio of variances: 7.695016
 # make a data set that includes tanks and use in all! consider time
 macro_trial1_data <- read.csv("data/macro_trial1_data.csv")
 
-# repeated code from above in case I only want to run this section
-transformed_trial_M1 <- macro_trial1_data %>%
-  mutate(logSettlement = log(Settlement))
 ```
 
 ```{r}
 # loading colours for treatments and tanks
-my_cols2 = c("A" = "orchid1", "B" = "lightpink1","C" = "seagreen", "D" = "springgreen3")
+my_cols2 = c("A" = "seagreen", "B" = "springgreen3", "C" = "orchid1", "D" = "lightpink1")
 
 my_x_title_2 = expression(paste(italic("Macrocystis pyrifera"), " Trial 1 - Tanks"))
 # graphing the difference in settlement depending on tanks
 # Treatment: tank A + B, Control: tank C + D
-ggplot(transformed_trial_M1, aes(x = Tank, y = logSettlement, fill = Tank)) + 
+ggplot(macro_trial1_data, aes(x = Tank, y = Settlement, fill = Tank)) + 
   geom_point(aes(colour = Tank), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols2) +
   scale_fill_manual(values = my_cols2) + 
   theme_classic() +
-  labs(x = my_x_title_2, y = "log(Settlement / Concentration)") +
+  labs(x = my_x_title_2, y = "Settlement / Concentration") +
   theme(axis.title = element_text(size = 13)) +
-  #scale_x_discrete(labels = c("Sound A", "Sound B", "Control C", "Control D")) +
+  scale_x_discrete(labels = c("Control A", "Control B", "Sound C", "Sound D")) +
   theme(legend.position = "none") 
 
 ```
@@ -195,71 +199,6 @@ F-statistic: 10.61 on 1 and 6 DF,  p-value: 0.0173
 TankB       -0.17521    0.05378   -3.258   0.0173 * 
 
 
-#### TRIAL 1 - GERMINATING SPORES 
-
-```{r}
-macro_trial1_germinating_ratio <- read.csv("data/macro_trial1_germinating_ratio.csv")
-```
-
-```{r}
-my_cols3 = c("Sound" = "orange1", "Control" = "royalblue2")
-
-ggplot(macro_trial1_germinating_ratio, aes(x = Treatment, y = Germinating.Settled, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols3) +
-  scale_fill_manual(values = my_cols3) + 
-  theme_classic() +
-  labs(x = "treatment", y = "spores germinating / settled")
-
-```
-
-### GERMINATING Analysis
-
-```{r}
-shapiro.test(macro_trial1_germinating_ratio$Germinating.Settled)
-```
-W = 0.97902, p-value = 0.226
-
-  NORMAL DISTRIBUTION 
-  - can use linear model and t test 
-  - do bartlet test if variance is equal, anova if not
-  - need to do??
-
-If other germination data is not normal:
-(real0to1 in fit dist is good for data from 0 to 1 - ie proportion of germination)
-
-```{r}
-macro_germinating_trial1.mod <- lm(Germinating.Settled ~ Treatment, 
-                      data = macro_trial1_germinating_ratio)
-summary(macro_germinating_trial1.mod)
-# consider adding in tank and do a linear model to account for random effects
-```
-Adjusted R-squared:  0.0007447 
-p-value: 0.3071
-
-```{r}
-t.test(Germinating.Settled ~ Treatment, data = macro_trial1_germinating_ratio, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-# best explains the data because normal and equal variance!
-```
-t = -1.0283, df = 76, p-value = 0.3071
-95 percent confidence interval:  -0.08711297   0.02778934
-mean in group 20 kHz: 0.5108839 
-mean in group control: 0.5405457
-                         
-
-```{r}
-var.test(Germinating.Settled ~ Treatment, macro_trial1_germinating_ratio, 
-         alternative = "two.sided")
-```
-F = 1.0053, num df = 39, denom df = 37, p-value = 0.9895
-95 percent confidence interval: 0.5255553 1.9121672
-ratio of variances:  1.005251 
-(f test)
-
-
-
 -------------------------------------------------------------------------------
 
 ### SPORE SETTLEMENT TRIAL 2
@@ -272,14 +211,14 @@ macro_trial2_data <- read.csv("data/macro_trial2_data.csv")
 
 ```{r}
 # making colours for the boxplot
-my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
+my_cols3 = c("Sound" = "orange2", "Control" = "blue3")
 
-# loading the trial 2 settlement box plot
+# graphing the trial 2 settlement data
 ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols3) +
+  scale_fill_manual(values = my_cols3) + 
   theme_classic() +
   labs(x = "Treatment", y = "Spore Settlement") +
   scale_x_discrete(labels = c("Control", "20 kHz")) +
@@ -289,9 +228,17 @@ ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
 
 ### SETTLEMENT Analysis
 ```{r}
+# testing for normality to determine which stat tests to use (ie parametric vs not)
+shapiro.test(macro_trial2_data$Settlement)
+```
+Shapiro test: W = 0.95166, p-value = 0.5165
+--> normal distribution
+
+```{r}
+# using a linear model to see patterns/differences between settlement (numerical)
+# and treatment (categorical)
 macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial2_data)
 summary(macro_trial2.mod)
-macro_trial2.mod$model
 ```
 Adjusted R-squared:  -0.042 
 F-statistic: 0.3955 on 1 and 14 DF,  p-value: 0.5396
@@ -299,37 +246,22 @@ F-statistic: 0.3955 on 1 and 14 DF,  p-value: 0.5396
                Estimate Std. Error t value Pr(>|t|)    
 (Intercept)      42.150      3.345  12.600 4.99e-09 ***
 TreatmentSound    2.975      4.731   0.629     0.54 
-In appendix 
+(present this in appendix)
 
 ```{r}
-shapiro.test(macro_trial2_data$Settlement)
-```
-Shapiro test: W = 0.95166, p-value = 0.5165
---> normal distribution
-
-```{r}
+# t test to find difference in means between Control group and Treatment group
+# testing similarity of means assumes normality
 t.test(Settlement ~ Treatment, data = macro_trial2_data, 
        alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
 ```
 t = 0.62885, df = 14, p-value = 0.5396
 95 percent confidence interval:  -13.121673   7.171673
   mean in group 20kHz:  45.125 
   mean in group Control: 42.150 
   
-              
-```{r}
-macro_trial2.aov <- aov(Settlement ~ Treatment, data = macro_trial2_data)
-summary(macro_trial2.aov)
-
-# assuming normality so not as helpful
-```
-            Df Sum Sq Mean Sq F value Pr(>F)
-Treatment    1   35.4   35.40   0.395   0.54
-Residuals   14 1253.3   89.52 
 
 ```{r}
+# testing for variance in data
 var.test(Settlement ~ Treatment, data = macro_trial2_data, 
          alternative = "two.sided")
 
@@ -338,81 +270,103 @@ F = 0.21288, num df = 7, denom df = 7, p-value = 0.05861
 95 percent confidence interval:  0.04261927 1.06331331
 ratio of variances: 0.2128794 
 
+
 ##### DIFFERENCE IN TANKS Trial 2
 
 ```{r}
-macro_control2_tanks <- read.csv("macro_control2_tanks.csv")
+# loading trial 2 data again in case I want to run this section of code 
+# independent of the rest of the markdown
+macro_trial2_data <- read.csv("data/macro_trial2_data.csv")
 ```
 
 ```{r}
-my_cols4 = c("Control A" = "yellow3", "Control B" = "maroon")
+my_cols4 = c("A" = "yellow3", "B" = "orange1", "C" = "blue", "D" = "purple")
 
-ggplot(macro_control2_tanks, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.6) +
+ggplot(macro_trial2_data, aes(x = Tank, y = Settlement, fill = Tank)) + 
+  geom_point(aes(colour = Tank), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.5) +
   scale_color_manual(values = my_cols4) +
   scale_fill_manual(values = my_cols4) + 
   theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
-
+  labs(x = "Tank", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Tank A", "Tank B", "Tank B", "Tank C")) +
+  scale_fill_discrete(name = "Treatments", labels = c("Treatment", "Treatment", 
+                                                       "Control", "Control"))
 
 ```
 
+### CONTROL V CONTROL AND TREATMENT V TREATMENT
 ```{r}
-macro_control2_tanks.mod <- lm(Settlement ~ Treatment, data = macro_control2_tanks)
-summary(macro_control2_tanks.mod)
+macro_control2_tanks <- macro_trial2_data %>%
+  filter(Treatment == "Control", .preserve = FALSE)
 ```
 Residual standard error: 0.002018 on 6 degrees of freedom
 Multiple R-squared:  9.092e-05,	Adjusted R-squared:  -0.1666 
 F-statistic: 0.0005456 on 1 and 6 DF,  p-value: 0.9821
 
 ```{r}
-macro_treatment2_tanks <- read.csv("macro_treatment2_tanks.csv")
+shapiro.test(macro_control2_tanks$Settlement)
+# W = 0.88177, p-value = 0.1958
+# normal
+```
+
+
+```{r}
+macro_control2_tanks.mod <-  lm(Settlement ~ Tank, data = macro_control2_tanks)
+summary(macro_control2_tanks.mod)
+```
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   42.200      3.027  13.939 8.49e-06 ***
+TankD         -0.100      4.281  -0.023    0.982 
+Not significant
+
+```{r}
+macro_treatment2_tanks <- macro_trial2_data %>%
+  filter(Treatment == "Sound", .preserve = FALSE)
+
 ```
 
 ```{r}
-my_cols5 = c("20kHz A" = "green4", "20kHz B" = "brown")
-
-ggplot(macro_treatment2_tanks, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols5) +
-  scale_fill_manual(values = my_cols5) + 
-  theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
-
+shapiro.test(macro_treatment2_tanks$Settlement)
+# W = 0.95602, p-value = 0.7714
+# normal
 ```
 
 ```{r}
-macro_treatment2_tanks.mod <- lm(Settlement ~ Treatment, data = treatmentB_tanks)
+macro_treatment2_tanks.mod <- lm(Settlement ~ Tank, data = macro_treatment2_tanks)
 summary(macro_treatment2_tanks.mod)
 ```
 Residual standard error: 0.004353 on 6 degrees of freedom
 Multiple R-squared:  0.009798,	Adjusted R-squared:  -0.1552 
 F-statistic: 0.05937 on 1 and 6 DF,  p-value: 0.8156
 
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   46.250      6.530   7.083 0.000397 ***
+TankB         -2.250      9.234  -0.244 0.815610 
+
 
 
 -----------------------------------------------------------------------------  
   
-### SPORE SETTLEMENT TRIAL 2
+### SPORE SETTLEMENT TRIAL 3
 
 ```{r}
-# macro settlement in trial 2 (two rounds of treatment, one control)
+# loading data for macro settlement in trial 2 (two rounds of treatment 
+# (Sound A, Sound B), one control)
 macro_trial3_4_data <- read.csv("data/macro_trial3_4_data.csv")
 ```
 
 ```{r}
-my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
+my_cols5 = c("Sound A" = "orange3", "Sound B" = "red3", "Control" = "blue3")
 
 ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols5) +
+  scale_fill_manual(values = my_cols5) + 
   theme_classic() +
   labs(x = "Treatment", y = "Spore Settlement") +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  scale_x_discrete(labels = c("Control", "20 kHz (A)", "20 kHz (B)")) +
   theme(legend.position = "none") 
 
 ```
@@ -421,12 +375,10 @@ ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)
 macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial3_4_data)
 summary(macro_trial2.mod)
 ```
-Adjusted R-squared:  0.5992 
-F-statistic: 35.39 on 1 and 22 DF,  p-value: 5.489e-06
-
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      67.400      7.035   9.580 2.62e-09 ***
-TreatmentSound   51.259      8.616   5.949 5.49e-06 ***
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        67.400      7.069   9.534 4.44e-09 ***
+TreatmentSound A   55.700      9.997   5.571 1.58e-05 ***
+TreatmentSound B   46.819      9.997   4.683 0.000127 
 
 ```{r}
 shapiro.test(macro_trial3_4_data$Settlement)
@@ -434,165 +386,31 @@ shapiro.test(macro_trial3_4_data$Settlement)
 W = 0.95047, p-value = 0.2773
 normal
 
-```{r}
-t.test(Settlement ~ Treatment, data = macro_trial3_4_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-t = -5.949, df = 22, p-value = 5.489e-06
-95 percent confidence interval: 0.01247693  0.02465641
-mean in group 20kHz:  0.04103333   
-mean in group Control: 0.02246667 
                         
 ```{r}
-macro_trial1.aov <- aov(Settlement ~ Treatment, data = macro_trial3_data)
+# can't run a t-test because there is more than 2 categorical variables 
+# Running a multi-factor anova --> three treatments (Sound A, Sound B, Control)
+macro_trial1.aov <- aov(Settlement ~ Treatment, data = macro_trial3_4_data)
 summary(macro_trial1.aov)
 ```
-            Df    Sum Sq   Mean Sq F value   Pr(>F)    
-Treatment    1 0.0013789 0.0013789   42.76 1.31e-05 ***
-Residuals   14 0.0004515 0.0000322 
+            Df Sum Sq Mean Sq F value   Pr(>F)    
+Treatment    2  14329    7164   17.92 2.88e-05 ***
+Residuals   21   8396     400  
 
 ```{r}
-var.test(Settlement ~ Treatment, data = macro_trial3_data, 
-         alternative = "two.sided")
-```
-F = 0.51324, num df = 7, denom df = 7, p-value = 0.3986
-95 percent confidence interval: 0.1027533   2.5636053
-ratio of variances: 0.5132436 
- 
- 
- 
-
-------------------------------------------------------------------------------
-
-### SPORE SETTLEMENT TRIAL 4
-
-```{r}
-macro_trial4_data <- read.csv("macro_trial4_data.csv")
-```
-
-```{r}
-my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
-
-ggplot(macro_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
-  theme_classic() +
-  labs(x = "Treatment", y = "Spore Settlement") +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
-  theme(legend.position = "none") 
-
-```
-
-```{r}
-macro_trial4.mod <- lm(Settlement ~ Treatment, data = macro_trial4_data)
-summary(macro_trial4.mod)
-```
-Residual standard error: 0.007463 on 14 degrees of freedom
-Multiple R-squared:  0.5554,	Adjusted R-squared:  0.5237 
-F-statistic: 17.49 on 1 and 14 DF,  p-value: 0.0009217
-
-```{r}
-shapiro.test(macro_trial4_data$Settlement)
-```
-W = 0.94625, p-value = 0.4327
-normal distribution
-
-```{r}
-t.test(Settlement ~ Treatment, data = macro_trial4_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-t = 4.1823, df = 14, p-value = 0.0009217
-95 percent confidence interval: 0.007603046 0.023609452
-mean in group 20kHz:  0.03807292 
-mean in group Control:  0.02246667 
-                        
-```{r}
-macro_trial4.aov <- aov(Settlement ~ Treatment, data = macro_trial4_data)
-summary(macro_trial4.aov)
-```
-            Df    Sum Sq   Mean Sq F value   Pr(>F)    
-Treatment    1 0.0009742 0.0009742   17.49 0.000922 ***
-Residuals   14 0.0007797 0.0000557  
-
-```{r}
-var.test(Settlement ~ Treatment, data = macro_trial4_data, 
-         alternative = "two.sided")
-```
-F = 1.6136, num df = 7, denom df = 7, p-value = 0.5432
-95 percent confidence interval: 0.3230489   8.0597852
-ratio of variances: 1.6136 
-
-
-
-
------------------------------------------------------------------------------
-
-### SPORE SETTLEMENT COMBINED TRIALS
-
-```{r}
-macro_trial1_2_combined <- read.csv("macro_trial1+2_combined.csv")
-```
-
-
-```{r}
-my_cols1 = c("20kHz" = "orchid1", "Control" = "seagreen")
-
-ggplot(macro_trial1_2_combined, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
-  theme_classic() +
-  labs(x = "treatment", y = "# spores settled / concentration")
-
-```
-
-```{r}
-macro_combined_1_2.mod <- lm(Settlement ~ Treatment, 
-                             data = macro_trial1_2_combined)
-summary(macro_combined_1_2.mod)
-```
-F-statistic: 0.3052 on 1 and 30 DF,  p-value: 0.5847
-
-```{r}
-shapiro.test(macro_trial1_2_combined$Settlement)
-```
-W = 0.90682, p-value = 0.009277
-- not normal distribution
-- need to model (only if using this graph)
-
-
-```{r}
-t.test(Settlement ~ Treatment, data = macro_trial1_2_combined, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-
-              
-```{r}
-aov <- aov(Settlement ~ Treatment, data = macro_trial1_2_combined)
-summary(aov)
-```
- 
-
-```{r}
-var.test(Settlement ~ Treatment, data = macro_trial1_2_combined, 
+# can't do variance - is variance even important here?
+# find another way online 
+var.test(Settlement ~ Treatment, data = macro_trial3_4_data, 
          alternative = "two.sided")
 ```
 
+ 
 
 
 
 -------------------------------------------------------------------------------
 
-####COMBINED TRIALS - no batch effect trial
+####COMBINED TRIALS - no batch effect trialS
 
 ```{r}
 # loading data of all trials combined (subtract trial 1)
@@ -607,7 +425,7 @@ my_cols1 = c("Sound" = "orchid1", "Control" = "seagreen")
 # plotting graph of all viable data from the macrocystis trials - without trial 1
 ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
+  geom_boxplot(alpha = 0.6) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
@@ -620,19 +438,19 @@ ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment
 ## Analysis
 ```{r}
 # testing if the data fits a normal distribution
-shapiro.test(macro_trial2_3_4_data$Settlement)
+shapiro.test(macro_trial_all_data$Settlement)
 ```
 W = 0.89575, p-value = 0.001441
 # Not a normal distribution!
 
 ```{r}
 # log transforming the data to see if it now fits a normal distribution
-transformed_all_data <- macro_trial2_3_4_data %>%
+transformed_all_data <- macro_trial_all_data %>%
   mutate(logSettlement = log(Settlement))
 
 shapiro.test(transformed_all_data$logSettlement)
 # W = 0.9219, p-value = 0.008842 
-# still not normal, further modelling necessary 
+# still not normal, further modeling necessary!!!! 
 ```
 
 
@@ -649,70 +467,50 @@ Fitting method: RS()
 - random(tank)
 - name them Tank A, B, C, D
 
-```{r}
-ev_test(beasts$danger) # sig diff from norm distribution, onot a good fit
-#Correlation test of fit for the gumbel distribution
-#R = 0.91185, p-value = 0.0006882
-exp_test(beasts$danger) # sig
-#Test for exponentially based on a transformation to uniformity
-#T = -6.4506, p-value < 2.2e-16
-gamma_test(beasts$danger) # not sig - therefore should test fit
-#Test of fit for the Gamma distribution
-#V = -0.055875, p-value = 0.9685
-lnorm_test(beasts$danger) # sig
-#Test for the lognormal distribution based on a transformation to normality
-#p-value = 0.02797
-normal_test(beasts$danger) # ns - test fit
-#Correlation test for normality
-#R = 0.99284, p-value = 0.09112
-# - alternative hypothesis: beasts$danger does not follow a normal distribution.
-weibull_test(beasts$danger) # ns - test fit
-#Test for the Weibull distribution
-#p-value = 0.252
-```
-
 
 ```{r}
-macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial2_3_4_data, family = "BCPEo")
+macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial_all_data, family = "BCPEo")
 summary(macro_combined.mod)
 ```
-                   Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      -3.468e+00  7.926e-05  -43755   <2e-16 ***
-TreatmentControl -3.909e-01  1.121e-04   -3487   <2e-16
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    4.1020666  0.0003758 10914.4   <2e-16 ***
+TreatmentSound 0.3908978  0.0004852   805.6   <2e-16 ***
+
 
 ```{r}
-t.test(Settlement ~ Treatment, data = macro_trial2_3_4_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
+# testing for random effects - tanks
+macro_random_tanks.mod <- gamlss(Settlement ~ Treatment + Tanks, family = "BCPEo", data = macro_trial_all_data)
+summary(macro_random_tanks.mod)
 
-# assuming normality testing similarity of means
 ```
-t = 3.8995, df = 46, p-value = 0.0003116
-95 percent confidence interval: 0.005670909   0.017772147
-  mean in group 20kHz:  0.03138264
-  mean in group Control:  0.01966111 
-                      
-```{r}
-aov <- aov(Settlement ~ Treatment, data = macro_trial2_3_4_data)
-summary(aov)
-```
-            Df   Sum Sq    Mean Sq     F value   Pr(>F)    
-Treatment    1   0.001649  0.0016487   15.21     0.000312 ***
-Residuals   46   0.004988  0.0001084
 
 ```{r}
-var.test(Settlement ~ Treatment, data = macro_trial2_3_4_data, 
-         alternative = "two.sided")
+# testing for random effects - time
+macro_random_tanks.mod <- gamlss(Settlement ~ Treatment + Time, family = "BCPEo", data = macro_trial_all_data)
+summary(macro_random_tanks.mod)
+
 ```
-F = 3.993, num df = 23, denom df = 23, p-value = 0.001541
-95 percent confidence interval: 1.727337   9.230339
-ratio of variances: 3.992982 
+
+ 
+
+```{r}
+library(car)
+# testing variance when we cannot assume normality 
+
+leveneTest(Settlement ~ Treatment, data = macro_trial_all_data)
+```
+group coerced to factor.Levene's Test for Homogeneity of Variance (center = median)
+      Df F value   Pr(>F)   
+group  1  8.4218 0.006138 **
+      38                    
+---
 
 
 
 
 ------------------------------------------------------------------------------
 
-### THREE SEPARATE TRIALS IN ONE FIGURE
+### ALL LEGIT TRIALS IN ONE FIGURE
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(patchwork)
@@ -723,36 +521,35 @@ macro_trial2_data = read.csv("data/macro_trial2_data.csv")
 macro_trial3_4_data = read.csv("data/macro_trial3_4_data.csv")
 macro_trial_all_data = read.csv("data/macro_trial2+3+4_combined.csv")
 
-my_cols1 = c("Sound" = "orange2", "Control" = "blue3")
+my_cols6 = c("Sound" = "orange2", "Control" = "blue3", "Control " = "blue3",
+             "Sound A" = "orange2", "Sound B" = "orange2")
 
 macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols6) +
+  scale_fill_manual(values = my_cols6) + 
   theme_classic() +
-  labs(x = "Trial 2", y = "Spore Settlement") +
-  theme(axis.title = element_text(size = 13)) +
+  labs(x = "Treatment", y = "Spore Settlement") +
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
+
 
 macro_trial3_4_graph = ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols6) +
+  scale_fill_manual(values = my_cols6) + 
   theme_classic() +
-  labs(x = "Trial 3", y = "Spore Settlement") +
-  theme(axis.title = element_text(size = 13)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  labs(x = "Treatment", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Control", "20 kHz (A)", "20 kHz (B)")) +
   theme(legend.position = "none") 
-
 
 combined_graph = ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  scale_color_manual(values = my_cols6) +
+  scale_fill_manual(values = my_cols6) + 
   theme_classic() +
   labs(x = "Macrocystis pyrifera Combined Data", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 13)) +
@@ -770,31 +567,40 @@ spore_settlement_macro+ plot_annotation(tag_levels = 'A')
 
 ```
 
+
 -----------------------------------------------------------------------------
 
 ### GERMINATION ANALYSIS
 
 ```{r}
 macro_germination_all <- read.csv("data/macro_germination.csv")
+
 ```
 
 ```{r}
-my_cols3 = c("A Control" = "red1", "A Treatment" = "red2", 
+my_cols7 = c("A Control" = "red1", "A Treatment" = "red2", 
              "B Control" = "pink1", "B Treatment" = "pink2",
              "C Control" = "blue1", "C Treatment" = "blue2")
 
+my_x_title = expression(paste(italic("Macrocystis pyrifera"), " Treatments"))
+
 ggplot(macro_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols3) +
-  scale_fill_manual(values = my_cols3) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols7) +
+  scale_fill_manual(values = my_cols7) + 
+  # scale_fill_discrete(name = "Duration (min)", labels = c("1227", "794", 
+  #                                                        "1120", "1110",
+  #                                                        "1200", "1253")) +
   theme_classic() +
-  labs(x = "Treatment", y = "Spores germinated / settled") +
+  labs(x = my_x_title, y = "Percent spores germinated") +
   theme(axis.title = element_text(size = 13)) +
   scale_x_discrete(labels = c("Control 1", "Treatment 1", "Control 2",
-                              "Treatment 2", "Control 3", "Treatment 3")) +
-  theme(legend.position = "none") 
+                              "Treatment 2", "Control 3", "Treatment 3"))
+  
+  
 
+# display time in legend
 ```
 
 
@@ -850,6 +656,9 @@ Adjusted R-squared:  0.01793
 F-statistic: 2.443 on 1 and 78 DF,  p-value: 0.1221
 
 ```{r}
+macro_combined.mod <- gamlss(Ratio ~ Treatment + Time, data = macro_germination_trial_3, family = "NET")
+summary(macro_combined.mod)
+
 # tranforming trial 3 data because it doesn't fit the normal distribution
 transformed_macro_germ_3 <- macro_germination_trial_3 %>%
   mutate(logRatio = log(Ratio))
@@ -858,9 +667,6 @@ transformed_macro_germ_3 <- macro_germination_trial_3 %>%
 shapiro.test(transformed_macro_germ_3$Ratio)
 # W = 0.96522, p-value = 0.003578 
 # still not normal
-# Using fitdist to model correct distribution of transformed data
-fitDist(logRatio, data = transformed_macro_germ_3, type = "realAll", try.gamlss = T) 
-# didn't run??
 
 # trying to fit the un-transformed data to a distribution
 fitDist(Ratio, data = macro_germination_trial_3, type = "realAll", try.gamlss = T) 
@@ -885,7 +691,6 @@ var.test(Ratio ~ Treatment, macro_germination_trial_2,
 # 95 percent confidence interval: 0.3211285   1.1479759
 # sample estimates: 0.6071637 
          
-
 var.test(Ratio ~ Treatment, macro_germination_trial_3, 
          alternative = "two.sided")
 # F = 2.7221, num df = 39, denom df = 78, p-value = 0.0001709
@@ -898,10 +703,6 @@ var.test(Ratio ~ Treatment, macro_germination_trial_3,
 
 ## Questions
 
-- PCAs are good at dealing with batch effects!!!! good to know 
-- need help with non parametric tests to run
-- is units of settlement supposed to be spores/ml?
-- spores over concentration so its spores^2/ml? that's weird lol - ie I don't 
-take the water in the tanks into consideration
+- fitDist of transformed data?
   
   

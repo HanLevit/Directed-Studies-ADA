@@ -31,18 +31,17 @@ alaria_trial1_2_data <- alaria_trial_all_data %>%
 ```
 
 ```{r}
-my_cols1 = c("Sound" = "khaki2", "Control" = "indianred3")
+my_cols1 = c("Sound A" = "khaki2", "Sound B" = "khaki1", "Control A-B" = "indianred3")
 
-ggplot(alaria_trial1_2_data, aes(x = Treatment,
-                                                     y = Settlement, fill = Treatment)) + 
+ggplot(alaria_trial1_2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
+  geom_boxplot(alpha = 0.6) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
   labs(x = "Trial 1", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  scale_x_discrete(labels = c("Control", "20 kHz A", "20 kHz B")) +
   theme(legend.position = "none") 
 
 ```
@@ -51,12 +50,13 @@ ggplot(alaria_trial1_2_data, aes(x = Treatment,
 alaria_trial1.mod <- lm(Settlement ~ Treatment, data = alaria_trial1_2_data)
 summary(alaria_trial1.mod)
 ```
-Adjusted R-squared:  0.1629 
-F-statistic: 5.474 on 1 and 22 DF,  p-value: 0.02878
+Adjusted R-squared:  0.07692 
+F-statistic: 6.042 on 2 and 119 DF,  p-value: 0.003169
 
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      14.975      1.534   9.762 1.87e-09 ***
-TreatmentSound    4.396      1.879   2.340   0.0288 * 
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        14.975      1.105  13.551  < 2e-16 ***
+TreatmentSound A    3.400      1.563   2.176 0.031565 *  
+TreatmentSound B    5.311      1.544   3.439 0.000805 ***
 
 ```{r}
 shapiro.test(alaria_trial1_2_data$Settlement)
@@ -64,16 +64,6 @@ shapiro.test(alaria_trial1_2_data$Settlement)
 W = 0.99451, p-value = 1
 NORMAL
 
-```{r}
-t.test(Settlement ~ Treatment, data = alaria_trial1_2_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-t = -2.3397, df = 22, p-value = 0.02878
-95 percent confidence interval: -8.2921577  -0.4995089
-mean in group Control   mean in group Sound 
-             14.97500              19.37083 
                         
 ```{r}
 # Running a Two-Factor anova 
@@ -81,14 +71,13 @@ mean in group Control   mean in group Sound
 alaria_trial1.aov <- aov(Settlement ~ Treatment, data = alaria_trial1_2_data)
 summary(alaria_trial1.aov)
 ```
-            Df Sum Sq Mean Sq F value Pr(>F)  
-Treatment    1  103.1  103.06   5.474 0.0288 *
-Residuals   22  414.2   18.83
+             Df Sum Sq Mean Sq F value  Pr(>F)   
+Treatment     2    590  295.13   6.042 0.00317 **
+Residuals   119   5813   48.85    
 
 ```{r}
-# testing for variance
-var.test(Settlement ~ Treatment, data = alaria_trial1_2_data, 
-         alternative = "two.sided")
+# testing for variance - doesn't work with three variables
+bartlett.test(Settlement ~ Treatment, data = alaria_trial1_2_data)
 ```
 F = 1.2111, num df = 7, denom df = 15, p-value = 0.7103
 95 percent confidence interval: 0.3677548 5.5322698
@@ -106,7 +95,7 @@ alaria_trial3_4_data <- alaria_trial_all_data %>%
 ```
 
 ```{r}
-my_cols2 = c("Sound" = "khaki2", "Control" = "indianred3")
+my_cols2 = c("Sound C" = "khaki2","Sound D" = "khaki1", "Control C-D" = "indianred3")
 
 ggplot(alaria_trial3_4_data, aes(x = Treatment, 
                                  y = Settlement, fill = Treatment)) + 
@@ -117,27 +106,38 @@ ggplot(alaria_trial3_4_data, aes(x = Treatment,
   theme_classic() +
   labs(x = "Trial 2", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  scale_x_discrete(labels = c("Control", "20 kHz A", "20 kHz B")) +
   theme(legend.position = "none") 
   
 ```
 
-```{r}
-alaria_trial2.mod <- lm(Settlement ~ Treatment, data = alaria_trial3_4_data)
-summary(alaria_trial2.mod)
-```
-Adjusted R-squared:  0.1269 
-F-statistic: 4.343 on 1 and 22 DF,  p-value: 0.049
-
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      12.800      1.164  10.992  2.1e-10 ***
-TreatmentSound    2.972      1.426   2.084    0.049 * 
 
 ```{r}
 shapiro.test(alaria_trial3_4_data$Settlement)
 ```
-W = 0.94019, p-value = 0.1648
-normal
+W = 0.96034, p-value = 0.001273
+not normal
+
+```{r}
+transformed_trial3_4_data <- alaria_trial3_4_data %>%
+  mutate(logSettlement = log(Settlement))
+
+shapiro.test(transformed_trial3_4_data$logSettlement)
+# W = 0.99172, p-value = 0.689
+```
+
+```{r}
+alaria_trial2.mod <- lm(logSettlement ~ Treatment, data = transformed_trial3_4_data)
+summary(alaria_trial2.mod)
+```
+Adjusted R-squared:  0.05553 
+F-statistic: 4.528 on 2 and 118 DF,  p-value: 0.01274
+
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)       3.21518    0.04903  65.575  < 2e-16 ***
+TreatmentSound C  0.15543    0.07066   2.200  0.02978 *  
+TreatmentSound D  0.20094    0.07020   2.862  0.00498 **
+
 
 
 ```{r}
@@ -153,12 +153,12 @@ mean in group Control   mean in group Sound
                      
                         
 ```{r}
-alaria_trial2.aov <- aov(Settlement ~ Treatment, data = alaria_trial3_4_data)
+alaria_trial2.aov <- aov(logSettlement ~ Treatment, data = transformed_trial3_4_data)
 summary(alaria_trial2.aov)
 ```
-            Df Sum Sq Mean Sq F value Pr(>F)  
-Treatment    1   47.1   47.10   4.343  0.049 *
-Residuals   22  238.6   10.85   
+             Df Sum Sq Mean Sq F value Pr(>F)  
+Treatment     2  0.914  0.4572   4.528 0.0127 *
+Residuals   118 11.914  0.1010    
 
 ```{r}
 var.test(Settlement ~ Treatment, data = alaria_trial3_4_data, 
@@ -167,156 +167,6 @@ var.test(Settlement ~ Treatment, data = alaria_trial3_4_data,
 F = 0.35858, num df = 7, denom df = 15, p-value = 0.1751
 95 percent confidence interval: 0.1088801 1.6379241
 ratio of variances: 0.3585815 
-
-
-----------------------------------------------------------------------------
-
-IGNORE!!!
-### ALARIA SETTLEMENT TRIAL 3
-
-```{r}
-alaria_trial_all_data = read.csv("data/alaria_trials_combined.csv")
-
-alaria_trial3_data <- alaria_trial_all_data %>%
-  filter(Trial == "3", .preserve = FALSE)
-
-```
-
-```{r}
-my_cols1 = c("Sound" = "khaki2", "Control" = "indianred3")
-
-ggplot(alaria_trial3_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
-  theme_classic() +
-  labs(x = "Trial 3", y = "Spore Settlement") +
-  theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
-  theme(legend.position = "none") 
-  
-```
-
-```{r}
-alaria_trial3.mod <- lm(Settlement ~ Treatment, data = alaria_trial3_data)
-summary(alaria_trial3.mod)
-```
-Adjusted R-squared:  0.115 
-F-statistic: 2.949 on 1 and 14 DF,  p-value: 0.108
-
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      12.800      1.047  12.220 7.41e-09 ***
-TreatmentSound    2.544      1.481   1.717    0.108  
-
-```{r}
-shapiro.test(alaria_trial3_data$Settlement)
-```
-W = 0.93167, p-value = 0.259
-normal
-
-```{r}
-t.test(Settlement ~ Treatment, data = alaria_trial3_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-t = -1.7172, df = 14, p-value = 0.108
-95 percent confidence interval:
- -5.7209272  0.6334272
-mean in group Control   mean in group Sound 
-             12.80000              15.34375 
-                     
-                        
-```{r}
-alaria_trial3.aov <- aov(Settlement ~ Treatment, data = alaria_trial3_data)
-summary(alaria_trial3.aov)
-```
-            Df Sum Sq Mean Sq F value Pr(>F)
-Treatment    1  25.88  25.883   2.949  0.108
-Residuals   14 122.89   8.778 
-
-```{r}
-var.test(Settlement ~ Treatment, data = alaria_trial3_data, 
-         alternative = "two.sided")
-```
-F = 0.38577, num df = 7, denom df = 7, p-value = 0.2321
-95 percent confidence interval:0.07723239   1.92687995
-ratio of variances: 0.3857688 
-
-
-----------------------------------------------------------------------------
-
-### ALARIA SETTLEMENT TRIAL 4
-
-```{r}
-alaria_trial_all_data = read.csv("data/alaria_trials_combined.csv")
-
-alaria_trial4_data <- alaria_trial_all_data %>%
-  filter(Trial == "4", .preserve = FALSE)
-
-```
-
-```{r}
-my_cols1 = c("Sound" = "khaki2", "Control" = "indianred3")
-
-ggplot(alaria_trial4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
-  theme_classic() +
-  labs(x = "Trial 4", y = "Spore Settlement") +
-  theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
-  theme(legend.position = "none") 
-  
-```
-
-```{r}
-alaria_trial4.mod <- lm(Settlement ~ Treatment, data = alaria_trial4_data)
-summary(alaria_trial4.mod)
-```
-Adjusted R-squared:  0.1849 
-F-statistic: 4.403 on 1 and 14 DF,  p-value: 0.0545
-
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      12.800      1.146  11.172 2.33e-08 ***
-TreatmentSound    3.400      1.620   2.098   0.0545 
-
-```{r}
-shapiro.test(alaria_trial4_data$Settlement)
-```
-W = 0.92744, p-value = 0.222
-normal
-
-```{r}
-t.test(Settlement ~ Treatment, data = alaria_trial4_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# assuming normality testing similarity of means
-```
-t = -2.0983, df = 14, p-value = 0.0545
-95 percent confidence interval: -6.87529303  0.07529303
-mean in group Control   mean in group Sound 
-                 12.8                  16.2 
-                     
-                        
-```{r}
-alaria_trial4.aov <- aov(Settlement ~ Treatment, data = alaria_trial4_data)
-summary(alaria_trial4.aov)
-```
-            Df Sum Sq Mean Sq F value Pr(>F)  
-Treatment    1  46.24   46.24   4.403 0.0545 .
-Residuals   14 147.03   10.50                 
-
-```{r}
-var.test(Settlement ~ Treatment, data = alaria_trial4_data, 
-         alternative = "two.sided")
-```
-F = 0.30322, num df = 7, denom df = 7, p-value = 0.1381
-95 percent confidence interval:0.06070511  1.51453904
-ratio of variances: 0.3032165 
 
 ----------------------------------------------------------------------
 
@@ -336,15 +186,67 @@ TreatmentSound    3.684      1.257   2.931  0.00525 **
 
 ```{r}
 shapiro.test(alaria_trial_all_data$Settlement)
+
+transformed_alaria_all_data <- alaria_trial_all_data %>%
+  mutate(logSettlement = log(Settlement)) %>%
+  subset(select = c(Treatment, logSettlement, Time, Tank))
+  
+
+shapiro.test(transformed_alaria_all_data$logSettlement)
+# W = 0.98838, p-value = 0.04697
+# still not normal
 ```
-W = 0.97504, p-value = 0.3925
-normal
+W = 0.95681, p-value = 1.154e-06
+not normal
+log transformed:
+W = 0.98838, p-value = 0.04697
 
 ```{r}
-t.test(Settlement ~ Treatment, data = alaria_trial_all_data, 
-       alternative = "two.sided", var.equal = T, conf.level = 0.95)
+fitDist(logSettlement, data = transformed_alaria_all_data, type = "realAll", try.gamlss = T) 
+# didn't run??
+
+#Family:  c("WEI", "Weibull") 
+#Fitting method: "nlminb" 
+
+# visualizing the distribution in a histogram
+histDist(transformed_alaria_all_data$logSettlement, "WEI")
+```
+
+
+```{r}
+
+alaria_combined.mod <- gamlss(logSettlement ~ Treatment, data = transformed_alaria_all_data, family = "WEI")
+summary(alaria_combined.mod)
+
 
 # assuming normality testing similarity of means
+```
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)           1.05119    0.01723  61.018  < 2e-16 ***
+TreatmentControl C-D  0.14065    0.02359   5.963 8.96e-09 ***
+TreatmentSound A      0.06371    0.02370   2.688  0.00770 ** 
+TreatmentSound B      0.07787    0.02349   3.315  0.00106 ** 
+TreatmentSound C      0.19714    0.02398   8.222 1.34e-14 ***
+TreatmentSound D      0.21667    0.02381   9.101  < 2e-16 ***
+
+```{r}
+alaria_combined.mod <- gamlss(logSettlement ~ Treatment + Tank, data = transformed_alaria_all_data, family = "WEI")
+summary(alaria_combined.mod)
+
+alaria_combined.mod <- gamlss(logSettlement ~ Treatment + Time, data = transformed_alaria_all_data, family = "WEI")
+summary(alaria_combined.mod)
+```
+
+```{r}
+
+```
+
+
+```{r}
+library(car)
+# testing variance when we cannot assume normality 
+
+leveneTest(Settlement ~ Treatment, data = alaria_trial_all_data)
 ```
 t = -2.9306, df = 46, p-value = 0.005253
 95 percent confidence interval: -6.214167 -1.153542
@@ -369,40 +271,54 @@ ratio of variances: 0.7314804
 library(patchwork)
 library(ggplot2)
 
-my_cols1 = c("Sound" = "khaki2", "Control" = "indianred3")
+my_cols1 = c("Sound A" = "khaki2", "Sound B" = "khaki1", "Control A-B" = "indianred3")
+my_cols2 = c("Sound C" = "khaki2","Sound D" = "khaki1", "Control C-D" = "indianred3")
+my_cols3 = c("Sound" = "khaki2", "Control" = "indianred3")
 
 alaria_trial_all_data = read.csv("data/alaria_trials_combined.csv")
 
+alaria_trial3_4_data <- alaria_trial_all_data %>%
+  filter(Trial == "3" | Trial == "4", .preserve = FALSE)
+
+alaria_trial1_2_data <- alaria_trial_all_data %>%
+  filter(Trial == "1" | Trial == "2", .preserve = FALSE)
+
+alaria_treatment_control = read.csv("data/alaria_all_treat_v_control.csv")
+
+```
+
+```{r}
+# loading all graphs 
 alaria_trial1_2_graph = ggplot(alaria_trial1_2_data, 
                              aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
+  geom_boxplot(alpha = 0.6) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
   labs(x = "Trial 1", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 13)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  scale_x_discrete(labels = c("Control", "20 kHz A", "20 kHz B")) +
   theme(legend.position = "none") 
 
 alaria_trial3_4_graph = ggplot(alaria_trial3_4_data, 
                              aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.6) +
+  scale_color_manual(values = my_cols2) +
+  scale_fill_manual(values = my_cols2) + 
   theme_classic() +
   labs(x = "Trial 2", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 13)) +
-  scale_x_discrete(labels = c("Control", "20 kHz")) +
+  scale_x_discrete(labels = c("Control", "20 kHz A", "20 kHz B")) +
   theme(legend.position = "none") 
 
 
-combined_graph = ggplot(alaria_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
+combined_graph = ggplot(alaria_treatment_control, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols1) +
-  scale_fill_manual(values = my_cols1) + 
+  geom_boxplot(alpha = 0.6) +
+  scale_color_manual(values = my_cols3) +
+  scale_fill_manual(values = my_cols3) + 
   theme_classic() +
   labs(x = "Alaria marginata Combined Data", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 13)) +
@@ -424,7 +340,7 @@ spore_settlement_alaria+ plot_annotation(tag_levels = 'A')
 ###SPECIES COMPARISON
 
 ```{r}
-all_data = read.csv("data/all_valid_data.csv")
+all_data = read.csv("data/all_settlement_data.csv")
 
   ggplot(all_data, aes(x = Label.B, y = Settlement, fill = Label.B)) + 
   geom_point(aes(colour = Label.B), position = position_jitterdodge()) +
@@ -477,4 +393,91 @@ shapiro.test(only_control_both_species$Settlement)
 ```
 W = 0.82702, p-value = 1.347e-06
 NOT NORMAL
+
+
+
+-----------------------------------------------------------------------------
+
+### GERMINATION ANALYSIS
+
+```{r}
+alaria_germination_all <- read.csv("data/alaria_germination.csv")
+```
+
+```{r}
+my_cols4 = c("A Control" = "purple1", "A Treatment" = "purple2", 
+             "B Control" = "lightgoldenrod1", "B Treatment" = "lightgoldenrod2")
+
+my_x_title_2 = expression(paste(italic("Alaria marginata"), " Treatments"))
+
+ggplot(alaria_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
+  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols4) +
+  scale_fill_manual(values = my_cols4) + 
+  theme_classic() +
+  labs(x = my_x_title_2, y = "Percent spores germinated") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control 1", "Treatment 1", 
+                              "Control 2", "Treatment 2"))
+
+```
+
+
+### GERMINATING Analysis
+
+```{r}
+alaria_germination_trial_1 <- alaria_germination_all %>%
+  filter(Treatment == "A Control" | Treatment == "A Treatment", .preserve = FALSE) 
+
+alaria_germination_trial_2 <- alaria_germination_all %>%
+  filter(Treatment == "B Control" | Treatment == "B Treatment", .preserve = FALSE)
+```
+
+
+```{r}
+# testing for normality in trial 1
+shapiro.test(alaria_germination_trial_1$Ratio)
+# W = 0.99187, p-value = 0.709 -> NORMAL
+
+# testing for normality in trial 2
+shapiro.test(alaria_germination_trial_2$Ratio)
+# W = 0.99403, p-value = 0.896 -> NORMAL
+
+```
+
+
+
+```{r}
+# running a linear model on trial 1 germination proportion - assuming normality
+# numerical and categorical variable (ratio and treatment respectively)
+alaria_germinating_trial1.mod <- lm(Ratio ~ Treatment, 
+                      data = alaria_germination_trial_1)
+summary(alaria_germinating_trial1.mod)
+```
+Adjusted R-squared:  0.01117 
+F-statistic: 2.344 on 1 and 118 DF,  p-value: 0.1284
+
+
+```{r}
+# running a linear model on trial 2 germination proportion - assuming normality
+alaria_germinating_trial2.mod <- lm(Ratio ~ Treatment, 
+                      data = alaria_germination_trial_2)
+summary(alaria_germinating_trial2.mod)
+```
+Adjusted R-squared:  0.1071 
+F-statistic: 15.15 on 1 and 117 DF,  p-value: 0.0001658
+
+
+```{r}
+var.test(Ratio ~ Treatment, alaria_germination_trial_1, 
+         alternative = "two.sided")
+# p-value = 0.9122
+         
+var.test(Ratio ~ Treatment, alaria_germination_trial_2, 
+         alternative = "two.sided")
+# p-value = 0.8049
+         
+```
+
 
