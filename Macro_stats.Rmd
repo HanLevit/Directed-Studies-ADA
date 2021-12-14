@@ -33,8 +33,6 @@ macro_trial1_data <- read.csv("data/macro_trial1_data.csv")
 ```{r}
 # loading colours for the graph
 my_cols1 = c("Control" = "seagreen", "Sound" = "orchid1")
-# italicizing only the species name in the title
-my_x_title = expression(paste(italic("Macrocystis pyrifera"), " Trial 1"))
 
 # loading graph plotting settlement in sound treatment v control
 # QUESTION should i plot logged data???
@@ -44,7 +42,7 @@ ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = my_x_title, y = "Settlement / Concentration") +
+  labs(x = "Treatment", y = "Settlement / Concentration") +
   theme(axis.title = element_text(size = 13)) +
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
@@ -59,8 +57,6 @@ ggplot(macro_trial1_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
 # if p < 0.05, data is not normal
 shapiro.test(macro_trial1_data$Settlement)
 ```
-Shapiro test: W = 0.79773, p-value = 4.103e-09
-Not normal -> try transforming data
 
 ```{r}
 # log transforming the data to see if it better fits normal distribution - note
@@ -70,59 +66,36 @@ transformed_trial_M1 <- macro_trial1_data %>%
 
 # testing for normality on transformed data
 shapiro.test(transformed_trial_M1$logSettlement)
+# still not normal!
 ```
-W = 0.90997, p-value = 0.1162
-Normal - can now run a linear model on it
-
-AFTER ADDING MORE DATA CHANGED: W = 0.9547, p-value = 0.006468
-REDO LATER!!!!
 
 
 ```{r}
 # Using gamlss to find which distribution best fits data
 fitDist(logSettlement, data = transformed_trial_M1, type = "realAll", try.gamlss = T) 
 # Best distribution: Family:  c("SN2", "skew normal type 2") 
-# normal 
+# Fitting method: "nlminb" 
 
 # visualizing the distribution
 histDist(transformed_trial_M1$logSettlement, "SN2")
 ```
 
-
 ```{r}
-# diff btwn t test, anova, and linear model?
-macro_trial1.mod <- lm(logSettlement ~ Treatment, data = transformed_trial_M1)
+# running a gamlss data on non-normal data to test for significance
+macro_trial1.mod <- gamlss(logSettlement ~ Treatment, data = transformed_trial_M1, family = "SEP2")
 summary(macro_trial1.mod)
 
-# assuming normality testing similarity of means
-t.test(logSettlement ~ Treatment, data = transformed_trial_M1, alternative = "two.sided", var.equal = T, conf.level = 0.95)
 ```
-t = 7.0771, df = 14, p-value = 5.532e-06
-95 percent confidence interval:
- 0.6025079 1.1265007
-mean in group Control: -5.229633
-mean in group Treatment 1: -6.094138 
-
-Changed:
-Adjusted R-squared:  0.6489 
-F-statistic:   147 on 1 and 78 DF,  p-value: < 2.2e-16
               
 ```{r}
-macro_trial1.aov <- aov(logSettlement ~ Treatment, data = transformed_trial_M1)
-summary(macro_trial1.aov)
-```
-            Df Sum Sq Mean Sq F value   Pr(>F)    
-Treatment    1 2.9895  2.9895   50.09 5.53e-06 ***
-Residuals   14 0.8356  0.0597 
+# Loading the library "car" in order to run Levene test
+library(car)
 
-```{r}
-# testing for variance in data 
-var.test(logSettlement ~ Treatment, transformed_trial_M1, 
-         alternative = "two.sided")
+# testing variance when we cannot assume normality - Levene's test
+leveneTest(logSettlement ~ Treatment, data = transformed_trial_M1)
+# not equal variances
+
 ```
-F = 7.695, num df = 7, denom df = 7, p-value = 0.01522
-95 percent confidence interval: 1.540572  38.435905
-ratio of variances: 7.695016 
 
 
 ## COMPARING TANKS TRIAL 1
@@ -154,7 +127,7 @@ ggplot(macro_trial1_data, aes(x = Tank, y = Settlement, fill = Tank)) +
 ```
 
 ```{r}
-# filtering data so we are only looking at control tanks - to compare settlment 
+# filtering data so we are only looking at control tanks - to compare settlement 
 # between tanks C and D
 macro_control1_tanks <- transformed_trial_M1 %>%
   filter(Treatment == "Control", .preserve = FALSE)
@@ -162,28 +135,28 @@ macro_control1_tanks <- transformed_trial_M1 %>%
 ```
 
 ```{r}
+# testing for normality 
+shapiro.test(macro_control1_tanks$Settlement)
+# W = 0.8073, p-value = 9.653e-06
+# not normal
+
 # testing for normality on transformed data in only control 
 shapiro.test(macro_control1_tanks$logSettlement)
-# W = 0.8832, p-value = 0.202
+# W = 0.9576, p-value = 0.1386
 # normal distribution
 
 # running a linear model to look for patterns and significance
 macro_control1.mod <- lm(logSettlement ~ Tank, data = macro_control1_tanks)
 summary(macro_control1.mod)
+# no significant difference between tanks
 ```
-Adjusted R-squared:  -0.06624 
-F-statistic: 0.5651 on 1 and 6 DF,  p-value: 0.4806
 
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  -5.1404     0.1678 -30.632 8.03e-08 ***
-TankD        -0.1784     0.2373  -0.752    0.481 
 
 ```{r}
 # filtering data so we are only looking at sound treatment  tanks - to c
 # compare settlment between tanks A and B
 macro_treatment1_tanks <- transformed_trial_M1 %>%
   filter(Treatment == "Sound", .preserve = FALSE)
-
 ```
 
 ```{r}
@@ -191,12 +164,6 @@ macro_treatment1_tanks <- transformed_trial_M1 %>%
 treatment1.mod <- lm(logSettlement ~ Tank, data = macro_treatment1_tanks)
 summary(treatment1.mod)
 ```
-Adjusted R-squared:  0.5786 
-F-statistic: 10.61 on 1 and 6 DF,  p-value: 0.0173
-
-            Estimate Std. Error  t value Pr(>|t|)    
-(Intercept) -6.00653    0.03803 -157.944 4.35e-12 ***
-TankB       -0.17521    0.05378   -3.258   0.0173 * 
 
 
 -------------------------------------------------------------------------------
@@ -207,7 +174,6 @@ TankB       -0.17521    0.05378   -3.258   0.0173 *
 # loading settlement data for trial 2 (one treatment, one control)
 macro_trial2_data <- read.csv("data/macro_trial2_data.csv")
 ```
-
 
 ```{r}
 # making colours for the boxplot
@@ -230,45 +196,57 @@ ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) 
 ```{r}
 # testing for normality to determine which stat tests to use (ie parametric vs not)
 shapiro.test(macro_trial2_data$Settlement)
+# W = 0.96914, p-value = 0.05001
+# normal distribution
+
+transformed_trial_M2 <- macro_trial2_data %>%
+  mutate(logSettlement = log(Settlement))
+
+shapiro.test(transformed_trial_M2$logSettlement)
+# W = 0.97423, p-value = 0.1057
+# more normal
 ```
-Shapiro test: W = 0.95166, p-value = 0.5165
---> normal distribution
+
 
 ```{r}
 # using a linear model to see patterns/differences between settlement (numerical)
-# and treatment (categorical)
+# and treatment (categorical) 
 macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial2_data)
 summary(macro_trial2.mod)
-```
-Adjusted R-squared:  -0.042 
-F-statistic: 0.3955 on 1 and 14 DF,  p-value: 0.5396
 
-               Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      42.150      3.345  12.600 4.99e-09 ***
-TreatmentSound    2.975      4.731   0.629     0.54 
-(present this in appendix)
+# using a linear model to see patterns/differences between settlement (numerical)
+# and treatment (categorical) of log transformed data
+macro_trial2.mod <- lm(logSettlement ~ Treatment, data = transformed_trial_M2)
+summary(macro_trial2.mod)
+```
+
 
 ```{r}
 # t test to find difference in means between Control group and Treatment group
 # testing similarity of means assumes normality
 t.test(Settlement ~ Treatment, data = macro_trial2_data, 
        alternative = "two.sided", var.equal = T, conf.level = 0.95)
-```
-t = 0.62885, df = 14, p-value = 0.5396
-95 percent confidence interval:  -13.121673   7.171673
-  mean in group 20kHz:  45.125 
-  mean in group Control: 42.150 
-  
+# p-value = 0.3652
 
+# runnning the same test on  transformed data
+t.test(logSettlement ~ Treatment, data = transformed_trial_M2, 
+       alternative = "two.sided", var.equal = T, conf.level = 0.95)
+# p-value = 0.4269
+```
+
+  
 ```{r}
-# testing for variance in data
+# F-test: testing for variance in data assuming normality
 var.test(Settlement ~ Treatment, data = macro_trial2_data, 
          alternative = "two.sided")
+# p-value = 0.3726
 
+# testing for variance in log transformed data
+var.test(logSettlement ~ Treatment, data = transformed_trial_M2, 
+         alternative = "two.sided")
+# p-value = 0.9032
 ```
-F = 0.21288, num df = 7, denom df = 7, p-value = 0.05861
-95 percent confidence interval:  0.04261927 1.06331331
-ratio of variances: 0.2128794 
+
 
 
 ##### DIFFERENCE IN TANKS Trial 2
@@ -280,8 +258,10 @@ macro_trial2_data <- read.csv("data/macro_trial2_data.csv")
 ```
 
 ```{r}
+# loading colours for graph
 my_cols4 = c("A" = "yellow3", "B" = "orange1", "C" = "blue", "D" = "purple")
 
+# plotting differences in settlement per tank
 ggplot(macro_trial2_data, aes(x = Tank, y = Settlement, fill = Tank)) + 
   geom_point(aes(colour = Tank), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.5) +
@@ -295,54 +275,49 @@ ggplot(macro_trial2_data, aes(x = Tank, y = Settlement, fill = Tank)) +
 
 ```
 
-### CONTROL V CONTROL AND TREATMENT V TREATMENT
+### Comparing Control Tanks
 ```{r}
+# filtering data to show settlement in control only
 macro_control2_tanks <- macro_trial2_data %>%
   filter(Treatment == "Control", .preserve = FALSE)
 ```
-Residual standard error: 0.002018 on 6 degrees of freedom
-Multiple R-squared:  9.092e-05,	Adjusted R-squared:  -0.1666 
-F-statistic: 0.0005456 on 1 and 6 DF,  p-value: 0.9821
 
 ```{r}
+# testing for normality
 shapiro.test(macro_control2_tanks$Settlement)
 # W = 0.88177, p-value = 0.1958
 # normal
 ```
 
-
 ```{r}
+# running linear model to test difference in settlement between tanks in control
 macro_control2_tanks.mod <-  lm(Settlement ~ Tank, data = macro_control2_tanks)
 summary(macro_control2_tanks.mod)
+# Adjusted R-squared:  -0.0263 
+# p-value: 0.9817
 ```
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   42.200      3.027  13.939 8.49e-06 ***
-TankD         -0.100      4.281  -0.023    0.982 
-Not significant
 
+### Comparing Treatment Tanks
 ```{r}
+# filtering data to only include sound treatment
 macro_treatment2_tanks <- macro_trial2_data %>%
   filter(Treatment == "Sound", .preserve = FALSE)
-
 ```
 
 ```{r}
+# testing for normality
 shapiro.test(macro_treatment2_tanks$Settlement)
 # W = 0.95602, p-value = 0.7714
 # normal
 ```
 
 ```{r}
+# running a linear model - assuming normality - to test difference in means
 macro_treatment2_tanks.mod <- lm(Settlement ~ Tank, data = macro_treatment2_tanks)
 summary(macro_treatment2_tanks.mod)
+# Adjusted R-squared:  -0.1552 
+# p-value: 0.8156
 ```
-Residual standard error: 0.004353 on 6 degrees of freedom
-Multiple R-squared:  0.009798,	Adjusted R-squared:  -0.1552 
-F-statistic: 0.05937 on 1 and 6 DF,  p-value: 0.8156
-
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   46.250      6.530   7.083 0.000397 ***
-TankB         -2.250      9.234  -0.244 0.815610 
 
 
 
@@ -357,8 +332,10 @@ macro_trial3_4_data <- read.csv("data/macro_trial3_4_data.csv")
 ```
 
 ```{r}
-my_cols5 = c("Sound A" = "orange3", "Sound B" = "red3", "Control" = "blue3")
+# loading colours
+my_cols5 = c("Sound A" = "orange2", "Sound B" = "orange1", "Control " = "blue3")
 
+# plotting differences in settlement for treatment vs control
 ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.5) +
@@ -372,19 +349,18 @@ ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)
 ```
 
 ```{r}
+# running a Shapiro-Wilk's test to test for normality
+shapiro.test(macro_trial3_4_data$Settlement)
+# W = 0.98765, p-value = 0.3554
+# normal
+```
+
+
+```{r}
+# running a linear model because we can assume normality
 macro_trial2.mod <- lm(Settlement ~ Treatment, data = macro_trial3_4_data)
 summary(macro_trial2.mod)
 ```
-                 Estimate Std. Error t value Pr(>|t|)    
-(Intercept)        67.400      7.069   9.534 4.44e-09 ***
-TreatmentSound A   55.700      9.997   5.571 1.58e-05 ***
-TreatmentSound B   46.819      9.997   4.683 0.000127 
-
-```{r}
-shapiro.test(macro_trial3_4_data$Settlement)
-```
-W = 0.95047, p-value = 0.2773
-normal
 
                         
 ```{r}
@@ -393,20 +369,13 @@ normal
 macro_trial1.aov <- aov(Settlement ~ Treatment, data = macro_trial3_4_data)
 summary(macro_trial1.aov)
 ```
-            Df Sum Sq Mean Sq F value   Pr(>F)    
-Treatment    2  14329    7164   17.92 2.88e-05 ***
-Residuals   21   8396     400  
 
 ```{r}
-# can't do variance - is variance even important here?
-# find another way online 
-var.test(Settlement ~ Treatment, data = macro_trial3_4_data, 
-         alternative = "two.sided")
+# Testing for variance between three variables using Bartlett's test
+bartlett.test(Settlement ~ Treatment, data = macro_trial3_4_data)
 ```
 
  
-
-
 
 -------------------------------------------------------------------------------
 
@@ -422,14 +391,15 @@ macro_trial_all_data <- read.csv("data/macro_trial2+3+4_combined.csv")
 # loading colours for the following graph
 my_cols1 = c("Sound" = "orchid1", "Control" = "seagreen")
 
-# plotting graph of all viable data from the macrocystis trials - without trial 1
+# plotting graph of all viable data from the macrocystis trials combined data
+# - without trial 1
 ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.6) +
   scale_color_manual(values = my_cols1) +
   scale_fill_manual(values = my_cols1) + 
   theme_classic() +
-  labs(x = "M. pyrifera Combined Data", y = "Spore Settlement") +
+  labs(x = "Treatment", y = "Spore Settlement") +
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
@@ -439,9 +409,10 @@ ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment
 ```{r}
 # testing if the data fits a normal distribution
 shapiro.test(macro_trial_all_data$Settlement)
-```
-W = 0.89575, p-value = 0.001441
+# W = 0.94299, p-value = 4.459e-07
 # Not a normal distribution!
+```
+
 
 ```{r}
 # log transforming the data to see if it now fits a normal distribution
@@ -449,7 +420,7 @@ transformed_all_data <- macro_trial_all_data %>%
   mutate(logSettlement = log(Settlement))
 
 shapiro.test(transformed_all_data$logSettlement)
-# W = 0.9219, p-value = 0.008842 
+# W = 0.96, p-value = 2.075e-05
 # still not normal, further modeling necessary!!!! 
 ```
 
@@ -457,26 +428,20 @@ shapiro.test(transformed_all_data$logSettlement)
 ```{r}
 # Using gamlss to find which distribution best models my data
 fitDist(Settlement, data = macro_trial_all_data, type = "realAll", try.gamlss = T) 
-histDist(macro_trial_all_data$Settlement, "BCPEo")
-```
-Family:  c("BCPEo", "Box-Cox Power Exponential-orig.") 
-Fitting method: RS() 
+# ("SEP2", "Skew Exponential Power type 2") 
+# Fitting method: "nlminb" 
 
-- gamlss model 
-- include time 
-- random(tank)
-- name them Tank A, B, C, D
+histDist(macro_trial_all_data$Settlement, "SEP2")
+
+```
 
 
 ```{r}
-macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial_all_data, family = "BCPEo")
+# running a gamlss model for the combined data and summarizing the results
+macro_combined.mod <- gamlss(Settlement ~ Treatment, data = macro_trial_all_data, family = "SEP2")
 summary(macro_combined.mod)
 ```
-                Estimate Std. Error t value Pr(>|t|)    
-(Intercept)    4.1020666  0.0003758 10914.4   <2e-16 ***
-TreatmentSound 0.3908978  0.0004852   805.6   <2e-16 ***
-
-
+               
 ```{r}
 # testing for random effects - tanks
 macro_random_tanks.mod <- gamlss(Settlement ~ Treatment + Tanks, family = "BCPEo", data = macro_trial_all_data)
@@ -491,19 +456,15 @@ summary(macro_random_tanks.mod)
 
 ```
 
- 
 
 ```{r}
+# loading car library in order to run Leven test on the non-normal distribution
 library(car)
-# testing variance when we cannot assume normality 
 
+# testing variance when we cannot assume normality 
 leveneTest(Settlement ~ Treatment, data = macro_trial_all_data)
+# p = 3.929e-09 - unequal variance
 ```
-group coerced to factor.Levene's Test for Homogeneity of Variance (center = median)
-      Df F value   Pr(>F)   
-group  1  8.4218 0.006138 **
-      38                    
----
 
 
 
@@ -513,17 +474,22 @@ group  1  8.4218 0.006138 **
 ### ALL LEGIT TRIALS IN ONE FIGURE
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# loadgin libraries needed for making combined graph
 library(patchwork)
 library(ggplot2)
 require(gridExtra)
 
+# loading all data needed for graphs so I can run this without going back through
+# the whole code
 macro_trial2_data = read.csv("data/macro_trial2_data.csv")
 macro_trial3_4_data = read.csv("data/macro_trial3_4_data.csv")
 macro_trial_all_data = read.csv("data/macro_trial2+3+4_combined.csv")
 
+# all colours used in the graphs
 my_cols6 = c("Sound" = "orange2", "Control" = "blue3", "Control " = "blue3",
              "Sound A" = "orange2", "Sound B" = "orange2")
 
+# graph for trial 2 data
 macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.5) +
@@ -534,7 +500,7 @@ macro_trial2_graph = ggplot(macro_trial2_data, aes(x = Treatment, y = Settlement
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 
-
+# graph for trial 3 and 4 data (two treatments, one control)
 macro_trial3_4_graph = ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.5) +
@@ -545,23 +511,26 @@ macro_trial3_4_graph = ggplot(macro_trial3_4_data, aes(x = Treatment, y = Settle
   scale_x_discrete(labels = c("Control", "20 kHz (A)", "20 kHz (B)")) +
   theme(legend.position = "none") 
 
+# graph for combined Macro data 
 combined_graph = ggplot(macro_trial_all_data, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols6) +
   scale_fill_manual(values = my_cols6) + 
   theme_classic() +
-  labs(x = "Macrocystis pyrifera Combined Data", y = "Spore Settlement") +
+  labs(x = "Treatment", y = "Spore Settlement") +
   theme(axis.title = element_text(size = 13)) +
   scale_x_discrete(labels = c("Control", "20 kHz")) +
   theme(legend.position = "none") 
 # describe in figure caption
-# report spore settlement as numbers
 
 ```
 
 ```{r}
+# loading patchwork library
 library(patchwork)
+#combining all graphs so trial 2 and 3/4 are on the tob and the combined graph 
+# is larger and on the bottom
 spore_settlement_macro = (macro_trial2_graph | macro_trial3_4_graph) / (combined_graph)
 spore_settlement_macro+ plot_annotation(tag_levels = 'A')
 
@@ -573,31 +542,33 @@ spore_settlement_macro+ plot_annotation(tag_levels = 'A')
 ### GERMINATION ANALYSIS
 
 ```{r}
+# loading germination data
 macro_germination_all <- read.csv("data/macro_germination.csv")
 
 ```
 
 ```{r}
+library(ggplot2)
+# specifying all colours necessary for graph
 my_cols7 = c("A Control" = "red1", "A Treatment" = "red2", 
              "B Control" = "pink1", "B Treatment" = "pink2",
              "C Control" = "blue1", "C Treatment" = "blue2")
 
+# Making x axis title - making species name in italics
 my_x_title = expression(paste(italic("Macrocystis pyrifera"), " Treatments"))
 
+# loading graph for germination data
 ggplot(macro_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
   geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.5) +
   scale_color_manual(values = my_cols7) +
   scale_fill_manual(values = my_cols7) + 
-  # scale_fill_discrete(name = "Duration (min)", labels = c("1227", "794", 
-  #                                                        "1120", "1110",
-  #                                                        "1200", "1253")) +
   theme_classic() +
-  labs(x = my_x_title, y = "Percent spores germinated") +
+  labs(x = my_x_title, y = "Proportion spores germinated") +
   theme(axis.title = element_text(size = 13)) +
   scale_x_discrete(labels = c("Control 1", "Treatment 1", "Control 2",
-                              "Treatment 2", "Control 3", "Treatment 3"))
-  
+                              "Treatment 2", "Control 3", "Treatment 3")) +
+  theme(legend.position = "none")
   
 
 # display time in legend
@@ -607,12 +578,15 @@ ggplot(macro_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) +
 ### GERMINATING Analysis
 
 ```{r}
+# filtering data so it is only germination data from treatment 1
 macro_germination_trial_1 <- macro_germination_all %>%
   filter(Treatment == "A Control" | Treatment == "A Treatment", .preserve = FALSE) 
 
+# filtering data so it is only germination data from treatment 2
 macro_germination_trial_2 <- macro_germination_all %>%
   filter(Treatment == "B Control" | Treatment == "B Treatment", .preserve = FALSE)
 
+# filtering data so it is only germination data from treatment 3/4
 macro_germination_trial_3 <- macro_germination_all %>%
   filter(Treatment == "C Control" | Treatment == "C Treatment", .preserve = FALSE)
 ```
@@ -640,9 +614,10 @@ shapiro.test(macro_germination_trial_3$Ratio)
 macro_germinating_trial1.mod <- lm(Ratio ~ Treatment, 
                       data = macro_germination_trial_1)
 summary(macro_germinating_trial1.mod)
+# Adjusted R-squared:  0.0007447 
+# p-value: 0.3071
 ```
-Adjusted R-squared:  0.0007447 
-F-statistic: 1.057 on 1 and 76 DF,  p-value: 0.3071
+
 
 
 ```{r}
@@ -650,12 +625,13 @@ F-statistic: 1.057 on 1 and 76 DF,  p-value: 0.3071
 macro_germinating_trial2.mod <- lm(Ratio ~ Treatment, 
                       data = macro_germination_trial_2)
 summary(macro_germinating_trial2.mod)
+# Adjusted R-squared:  0.01793 
+# p-value: 0.1221
 ```
-not sig
-Adjusted R-squared:  0.01793 
-F-statistic: 2.443 on 1 and 78 DF,  p-value: 0.1221
+
 
 ```{r}
+# running a gamlss model including time
 macro_combined.mod <- gamlss(Ratio ~ Treatment + Time, data = macro_germination_trial_3, family = "NET")
 summary(macro_combined.mod)
 
@@ -679,18 +655,21 @@ histDist(macro_germination_trial_3$Ratio, "NET")
 
 
 ```{r}
+# running a variance test for trial 1
 var.test(Ratio ~ Treatment, macro_germination_trial_1, 
          alternative = "two.sided")
 # F = 0.99478, num df = 37, denom df = 39, p-value = 0.9895
 # 95 percent confidence interval: 0.5229668  1.9027493
 # sample estimates: 0.9947763 
-         
+
+# running a variance test for trial 2     
 var.test(Ratio ~ Treatment, macro_germination_trial_2, 
          alternative = "two.sided")
 # F = 0.60716, num df = 39, denom df = 39, p-value = 0.1235
 # 95 percent confidence interval: 0.3211285   1.1479759
 # sample estimates: 0.6071637 
          
+# running a variance test for trial 3/4
 var.test(Ratio ~ Treatment, macro_germination_trial_3, 
          alternative = "two.sided")
 # F = 2.7221, num df = 39, denom df = 78, p-value = 0.0001709
@@ -700,9 +679,5 @@ var.test(Ratio ~ Treatment, macro_germination_trial_3,
 ```
 
 
-
-## Questions
-
-- fitDist of transformed data?
   
   
