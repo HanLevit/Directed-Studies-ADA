@@ -1,0 +1,443 @@
+﻿Settlement,Treatment,Tanks,Trial Number,Time,Species,Label,Label.B,Treatment.Simp
+60,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+44,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+57,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+54,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+37,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+38,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+51,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+38,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+37,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+20,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+41,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+39,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+37,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+38,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+58,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+35,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+42,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+36,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+30,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+52,Control,A,2,1120,Macro,M_A_Control,M_Control,Control
+49,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+50,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+39,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+21,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+22,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+14,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+42,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+51,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+47,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+33,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+42,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+38,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+24,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+45,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+87,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+61,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+54,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+48,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+26,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+49,Control,B,2,1120,Macro,M_A_Control,M_Control,Control
+51,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+32,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+50,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+37,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+42,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+90,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+45,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+57,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+91,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+46,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+69,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+48,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+95,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+18,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+70,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+52,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+78,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+62,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+46,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+30,Control,A,3,1200,Macro,M_B_Control,M_Control,Control
+42,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+69,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+52,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+80,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+43,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+102,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+110,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+91,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+94,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+111,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+58,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+59,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+84,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+79,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+60,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+91,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+78,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+96,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+99,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+89,Control,B,3,1200,Macro,M_B_Control,M_Control,Control
+81,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+77,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+55,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+42,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+77,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+49,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+41,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+40,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+54,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+45,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+29,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+34,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+46,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+33,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+64,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+42,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+30,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+26,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+28,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+32,Sound,C,2,1110,Macro,M_A_Sound,M_Sound,Sound
+46,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+54,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+25,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+44,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+36,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+49,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+76,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+48,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+58,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+50,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+29,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+33,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+50,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+20,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+18,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+40,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+58,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+61,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+42,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+43,Sound,D,2,1110,Macro,M_A_Sound,M_Sound,Sound
+76,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+96,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+136,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+149,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+148,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+133,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+123,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+136,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+168,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+116,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+121,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+128,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+137,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+109,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+114,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+96,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+93,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+125,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+116,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+129,Sound A,C,3,1253,Macro,M_B_Sound,M_Sound,Sound
+128,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+145,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+143,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+152,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+160,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+105,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+113,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+134,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+155,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+114,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+122,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+134,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+124,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+103,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+148,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+113,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+110,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+116,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+57,Sound A,D,3,1253,Macro,M_B_Sound,M_Sound,Sound
+111,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+86,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+102,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+115,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+95,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+110,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+108,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+107,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+100,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+88,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+108,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+98,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+110,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+84,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+139,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+74,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+81,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+66,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+78,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+72,Sound B,C,4,1253,Macro,M_C_Sound,M_Sound,Sound
+7,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+94,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+112,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+112,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+101,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+155,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+169,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+174,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+109,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+99,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+145,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+127,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+142,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+120,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+122,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+139,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+158,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+131,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+173,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+150,Sound B,D,4,1253,Macro,M_C_Sound,M_Sound,Sound
+8,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+6,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+8,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+7,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+12,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+14,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+19,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+13,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+5,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+8,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+11,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+13,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+14,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+12,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+14,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+7,Control A-B,C,1,1611,Alaria,A_A_Control,A_Control,Control
+10,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+16,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+14,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+16,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+10,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+13,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+17,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+25,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+10,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+20,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+15,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+18,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+22,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+40,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+24,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+10,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+22,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+20,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+16,Control A-B,D,1,1611,Alaria,A_A_Control,A_Control,Control
+11.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+11.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+12.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+6.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+10.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+17,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+15,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+17,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+17,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+6,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+12,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+14.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+16.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+15,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+23.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+8.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+11,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+12.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+11.5,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+9,Control C-D,C,3,1185,Alaria,A_B_Control,A_Control,Control
+9.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+10,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+9.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+14.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+10,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+12.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+14,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+11.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+10.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+11.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+13.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+13.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+13,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+15.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+18,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+14.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+13.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+14.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+15.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+12,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+13.5,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+11,Control C-D,D,3,1185,Alaria,A_B_Control,A_Control,Control
+14,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+23,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+9,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+8,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+19,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+12,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+19,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+14,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+39,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+8,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+23,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+10,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+12,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+12,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+10,Sound A,A,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+40,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+37,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+24,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+29,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+20,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+17,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+20,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+11,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+10,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+29,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+19,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+14,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+19,Sound A,B,1,1444,Alaria,A_A_Sound,A_Sound,Sound
+29,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+17,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+17,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+23,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+24,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+29,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+26,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+14,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+27,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+14,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+23,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+17,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+9,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+12,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+29,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+21,Sound B,A,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+10,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+28,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+17,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+31,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+22,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+20,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+34,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+40,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+13,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+21,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+21,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+15,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+14,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+18,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+21,Sound B,B,2,1444,Alaria,A_A_Sound,A_Sound,Sound
+16,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+14,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+8.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+12.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+22,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+7.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+11.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+10,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+9,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+11.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+17,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+15.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+18.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+20,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+10.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+15.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+11.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+14,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+14.5,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+17,Sound C,A,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+23.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+16,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+17,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+14.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+12,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+12.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+21.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+19,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+11.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+16,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+26.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+22.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+21,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+23.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+19.5,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+8,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+12,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+11,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+12,Sound C,B,3,1181,Alaria,A_B_Sound,A_Sound,Sound
+26,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+28.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+19,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+20.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+24.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+15,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+17.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+13.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+20,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+10.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+20,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+18,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+14,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+20,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+17.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+10.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+7,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+12.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+9.5,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+9,Sound D,A,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+13,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+16.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+12,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+15,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+19,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+23.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+11,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+20.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+11,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+14,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+21.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+13.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+14.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+6,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+13.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+9.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+29.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+19,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+13,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound
+19.5,Sound D,B,4,1181,Alaria,A_B_Sound,A_Sound,Sound

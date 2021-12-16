@@ -10,7 +10,6 @@ library(goft)
 library(gamlss)
 library(patchwork)
 library(MASS)
-# do i need all of these?
 ```
 
 
@@ -19,14 +18,18 @@ library(MASS)
 ### SPORE SETTLEMENT TRIAL 1
 
 ```{r}
-# loading all alaria measurements 
-alaria_trial_all_data = read.csv("data/alaria_trials_combined.csv")
+# loading all data
+all_data <- read.csv("data/all_settlement_data.csv")
+
+# filtering to only include Alaria
+alaria_trial_all_data <- all_data %>%
+  filter(Species == "Alaria", .preserve = FALSE)
 
 # parsing data such that only trial 1 is present 
     # Note: trial one is now the combination of trial 1 and trial 2 because they
           # both used the same batch of spores
 alaria_trial1_2_data <- alaria_trial_all_data %>%
-  filter(Trial == "1" | Trial == "2", .preserve = FALSE)
+  filter(Trial.Number == "1" | Trial.Number == "2", .preserve = FALSE)
 
 ```
 
@@ -79,11 +82,119 @@ bartlett.test(logSettlement ~ Treatment, data = transformed_trial_1)
 ```
 
 
+##### DIFFERENCE IN TANKS Trial 1
+
+```{r}
+# loading all data again in case I want to run this section alone
+all_data <- read.csv("data/all_settlement_data.csv")
+
+# filtering to only include Alaria
+alaria_trial_all_data <- all_data %>%
+  filter(Species == "Alaria", .preserve = FALSE)
+
+# filtering to only include trial 1 data
+alaria_trial1_2_data <- alaria_trial_all_data  %>%
+  filter(Trial.Number == "1" | Trial.Number == "2", .preserve = FALSE)
+```
+
+```{r}
+# loading colours for graph
+my_cols4 = c("A" = "yellow3", "B" = "orange1", "C" = "blue", "D" = "purple")
+
+# plotting differences in settlement per tank
+ggplot(alaria_trial1_2_data, aes(x = Tanks, y = Settlement, fill = Tanks)) + 
+  geom_point(aes(colour = Tanks), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols4) +
+  scale_fill_manual(values = my_cols4) + 
+  theme_classic() +
+  labs(x = "Tank", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Tank A", "Tank B", "Tank C", "Tank D")) +
+  scale_fill_discrete(name = "Treatments", labels = c("Treatment", "Treatment", 
+                                                       "Control", "Control"))
+
+```
+
+### Comparing Control Tanks
+```{r}
+# filtering data to show settlement in control only
+alaria_trial1_2_control_tanks <- alaria_trial1_2_data %>%
+  filter(Treatment.Simp == "Control", .preserve = FALSE)
+```
+
+```{r}
+# testing for normality
+shapiro.test(alaria_trial1_2_control_tanks$Settlement)
+# W = 0.90446, p-value = 0.002584
+# not normal
+
+# log transforming the data
+transformed_trial1_2_control_tanks <- alaria_trial1_2_control_tanks %>%
+  mutate(logSettlement = log(Settlement))
+
+# testing for normality of transformed data
+shapiro.test(transformed_trial1_2_control_tanks$logSettlement)
+# W = 0.9758, p-value = 0.5372
+# normal
+
+```
+
+```{r}
+# running linear model on transformed data to test difference in settlement 
+# between tanks in control
+alaria_control1_2_tanks.mod <-  lm(logSettlement ~ Tanks, 
+                                   data = transformed_trial1_2_control_tanks)
+summary(alaria_control1_2_tanks.mod)
+# Adjusted R-squared:  0.194 
+# p-value: 0.002606
+```
+
+### Comparing Treatment Tanks
+```{r}
+# filtering data to only include sound treatment
+alaria_trial1_2_treatment_tanks <- alaria_trial1_2_data %>%
+  filter(Treatment.Simp == "Sound", .preserve = FALSE)
+```
+
+```{r}
+# testing for normality
+shapiro.test(alaria_trial1_2_treatment_tanks$Settlement)
+# W = 0.93128, p-value = 0.0002825
+# not normal
+
+# log transforming the data
+transformed_trial1_2_treatment_tanks <- alaria_trial1_2_treatment_tanks %>%
+  mutate(logSettlement = log(Settlement))
+
+# testing for normality of transformed data
+shapiro.test(transformed_trial1_2_treatment_tanks$logSettlement)
+# W = 0.98471, p-value = 0.4401
+# normal
+```
+
+```{r}
+# running a linear model - assuming normality - to test difference in means
+alaria_treatment1_2_tanks.mod <- lm(logSettlement ~ Tanks, 
+                                    data = transformed_trial1_2_treatment_tanks)
+summary(alaria_treatment1_2_tanks.mod)
+# Adjusted R-squared:  0.0487 
+# p-value: 0.02599 
+```
+
+
+
+
+-----------------------------------------------------------------------------
+
 ### ALARIA SETTLEMENT TRIAL 2
 
 ```{r}
-# loading all data again
-alaria_trial_all_data = read.csv("data/alaria_trials_combined.csv")
+# loading all data again in case I want to run this section alone
+all_data <- read.csv("data/all_settlement_data.csv")
+
+# filtering to only include Alaria
+alaria_trial_all_data <- all_data %>%
+  filter(Species == "Alaria", .preserve = FALSE)
 
 # filtering data to only include trial 3 and 4 (they have the same control)
 alaria_trial3_4_data <- alaria_trial_all_data %>%
@@ -134,14 +245,6 @@ alaria_trial2.mod <- lm(logSettlement ~ Treatment, data = transformed_trial3_4_d
 summary(alaria_trial2.mod)
 ```
 
-
-```{r}
-# doing a t-test with the log transformed data (assuming normality)
-# t.test(logSettlement ~ Treatment, data = transformed_trial3_4_data, 
-#3       alternative = "two.sided", var.equal = T, conf.level = 0.95)
-
-# this t-test doesn't run for some reason - ASK!!!
-```
                         
 ```{r}
 # Running a two factor anova on transformed data - similar to the linear model
@@ -158,55 +261,126 @@ bartlett.test(logSettlement ~ Treatment, data = transformed_trial3_4_data)
 ```
 
 
-----------------------------------------------------------------------
+##### DIFFERENCE IN TANKS Trial 2
+
+```{r}
+# loading all data again in case I want to run this section alone
+all_data <- read.csv("data/all_settlement_data.csv")
+
+# filtering to only include Alaria
+alaria_trial_all_data <- all_data %>%
+  filter(Species == "Alaria", .preserve = FALSE)
+
+# filtering to only include trial 2 data
+alaria_trial3_4_data <- alaria_trial_all_data  %>%
+  filter(Trial.Number == "3" | Trial.Number == "4", .preserve = FALSE)
+```
+
+```{r}
+# loading colours for graph
+my_cols4 = c("A" = "yellow3", "B" = "orange1", "C" = "blue", "D" = "purple")
+
+# plotting differences in settlement per tank
+ggplot(alaria_trial3_4_data, aes(x = Tanks, y = Settlement, fill = Tanks)) + 
+  geom_point(aes(colour = Tanks), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols4) +
+  scale_fill_manual(values = my_cols4) + 
+  theme_classic() +
+  labs(x = "Tank", y = "Spore Settlement") +
+  scale_x_discrete(labels = c("Tank A", "Tank B", "Tank C", "Tank D")) +
+  scale_fill_discrete(name = "Treatments", labels = c("Treatment", "Treatment", 
+                                                       "Control", "Control"))
+
+```
+
+### Comparing Control Tanks
+```{r}
+# filtering data to show settlement in control only
+alaria_trial3_4_control_tanks <- alaria_trial3_4_data %>%
+  filter(Treatment.Simp == "Control", .preserve = FALSE)
+```
+
+```{r}
+# testing for normality
+shapiro.test(alaria_trial3_4_control_tanks$Settlement)
+# W = 0.9665, p-value = 0.2507
+# normal
+```
+
+```{r}
+# running linear model on transformed data to test difference in settlement 
+# between tanks in control
+alaria_control3_4_tanks.mod <-  lm(Settlement ~ Tanks, 
+                                   data = alaria_trial3_4_control_tanks)
+summary(alaria_control3_4_tanks.mod)
+# Adjusted R-squared:  -0.02458 
+# p-value: 0.8989
+```
+
+### Comparing Treatment Tanks
+```{r}
+# filtering data to only include sound treatment
+alaria_trial3_4_treatment_tanks <- alaria_trial3_4_data %>%
+  filter(Treatment.Simp == "Sound", .preserve = FALSE)
+```
+
+```{r}
+# testing for normality
+shapiro.test(alaria_trial3_4_treatment_tanks$Settlement)
+# W = 0.97483, p-value = 0.1201
+```
+
+```{r}
+# running a linear model - assuming normality - to test difference in means
+alaria_treatment3_4_tanks.mod <- lm(Settlement ~ Tanks, 
+                                    data = alaria_trial3_4_treatment_tanks)
+summary(alaria_treatment3_4_tanks.mod)
+# Adjusted R-squared:  -0.003004 
+# p-value: 0.3841
+```
+
+
+
+---------------------------------------------------------------------------
 
 ### COMBINED DATA 
 ```{r}
 # loading all data again
 all_data = read.csv("data/all_settlement_data.csv")
 
-all_alaria_settlement <- all_data %>%
+alaria_trial_all_data <- all_data %>%
   filter(Species == "Alaria", .preserve = FALSE)
-
-# wrangling data so they are read as factors by the model - need distinct levels
-# for multi-variable model to run correctly 
-alaria_data_fixed <- all_alaria_settlement %>%
-  mutate(Treatment = as.factor(Treatment)) %>%
-  mutate(Tank = as.factor(Tanks)) %>%
-  mutate(Trial = as.factor(Trial.Number))
 
 ```
 
 
 ```{r}
 # testing for normality in all alaria settlement data
-shapiro.test(all_alaria_settlement$Settlement)
+shapiro.test(alaria_trial_all_data$Settlement)
+# W = 0.95681, p-value = 1.154e-06
+# not normal
 
-# distribution is not normal (p = 1.423e-09), so I'm log transforming the data
+# distribution is not normal, so I'm log transforming the data
 # to see if that normalized it. 
-transformed_alaria_all_data <- alaria_data_fixed %>%
-  mutate(logSettlement = log(Settlement)) %>%
-  subset(select = c(Treatment, logSettlement, Time, Tanks))
+transformed_alaria_all_data <- alaria_trial_all_data %>%
+  mutate(logSettlement = log(Settlement)) 
   
 # Running another Shapiro-Wilk's test on transformed data
 shapiro.test(transformed_alaria_all_data$logSettlement)
-# W = 0.99481, p-value = 0.5787
-# normal now
+# W = 0.98838, p-value = 0.04697
+# not normal
 
 ```
 
 ```{r}
-# running linear model of all data - two variables only
-alaria_trial_all.mod <- lm(logSettlement ~ Treatment, data = transformed_alaria_all_data)
-summary(alaria_trial_all.mod)
-# Adjusted R-squared:  0.1268 
-# F-statistic: 8.026 on 5 and 237 DF,  p-value: 5.206e-07
+# running a fitDist to see which distribution best fits data
+fitDist(logSettlement, data = transformed_alaria_all_data, type = "realAll", try.gamlss = T) 
+# Family:  c("WEI", "Weibull") 
 
-# running a linear model that accounts for difference between tanks and time
-alaria_combined.mod <- lm(Settlement ~ Treatment + Tank + Time, data = transformed_alaria_all_data )
+# running a GAMLSS model
+alaria_combined.mod <- gamlss(logSettlement ~ Treatment.Simp, data = transformed_alaria_all_data, family = "WEI")
 summary(alaria_combined.mod)
-# Adjusted R-squared:  0.156 
-# F-statistic: 7.389 on 7 and 235 DF,  p-value: 5.023e-08
 
 ```
 
@@ -218,8 +392,8 @@ alaria_only_sound <- alaria_trial_all_data %>%
          | Treatment == "Sound D", .preserve = FALSE)
 
 # finding mean settlement for sound treatment
-mean(alaria_only_sound$Settlement)
-# 25.31056
+mean(alaria_only_sound$Settlement.Rate)
+# 0.01336879
 
 # filtering all data to only display settlement for control
 alaria_only_control <- alaria_trial_all_data %>%
@@ -227,8 +401,8 @@ alaria_only_control <- alaria_trial_all_data %>%
          .preserve = FALSE)
 
 # finding mean settlement for control
-mean(alaria_only_control$Settlement)
-# 20.47561
+mean(alaria_only_control$Settlement.Rate)
+# 0.01009165
 
 ```
 
@@ -237,6 +411,7 @@ mean(alaria_only_control$Settlement)
 bartlett.test(logSettlement ~ Treatment, data = transformed_alaria_all_data)
 # p = 0.02873
 ```
+
 
 ------------------------------------------------------------------------------
 
@@ -261,18 +436,14 @@ all_data = read.csv("data/all_settlement_data.csv")
 ## need to add another column to all data with just control vs settlment for 
 # between species analysis because it is easier to then look at all controls
 # instead of control A-B
-all_alaria_settlement <- all_data %>%
+alaria_trial_all_data <- all_data %>%
   filter(Species == "Alaria", .preserve = FALSE)
 
-alaria_trial3_4_data <- all_alaria_settlement %>%
-  filter(Trial == "3" | Trial == "4", .preserve = FALSE)
+alaria_trial3_4_data <- alaria_trial_all_data %>%
+  filter(Trial.Number == "3" | Trial.Number == "4", .preserve = FALSE)
 
-alaria_trial1_2_data <- all_alaria_settlement %>%
-  filter(Trial == "1" | Trial == "2", .preserve = FALSE)
-
-# loading all data with only treatment and control labelled (ie no Sound B or 
-# Sound A labels)
-alaria_treatment_control = read.csv("data/alaria_all_treat_v_control.csv")
+alaria_trial1_2_data <- alaria_trial_all_data %>%
+  filter(Trial.Number == "1" | Trial.Number == "2", .preserve = FALSE)
 
 ```
 
@@ -306,8 +477,10 @@ alaria_trial3_4_graph = ggplot(alaria_trial3_4_data,
   theme(legend.position = "none") 
 
 # combined data graph
-combined_graph = ggplot(alaria_treatment_control, aes(x = Treatment, y = Settlement, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
+# using Treatment.simp because that is only labelled as control or sound, no 
+# "Control C-D" or "Sound B"
+combined_graph = ggplot(alaria_trial_all_data, aes(x = Treatment.Simp, y = Settlement, fill = Treatment.Simp)) + 
+  geom_point(aes(colour = Treatment.Simp), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.6) +
   scale_color_manual(values = my_cols3) +
   scale_fill_manual(values = my_cols3) + 
@@ -322,7 +495,9 @@ combined_graph = ggplot(alaria_treatment_control, aes(x = Treatment, y = Settlem
 # putting the two trials on the top and combined data on bottom in a combined 
 # graph
 spore_settlement_alaria = (alaria_trial1_2_graph | alaria_trial3_4_graph) / (combined_graph)
-spore_settlement_alaria+ plot_annotation(tag_levels = 'A')
+all_alaria_trial = spore_settlement_alaria+ plot_annotation(tag_levels = 'A')
+
+ggsave(all_alaria_trial, filename = "alaria_combined_data.jpeg")
 
 ```
 
@@ -332,10 +507,45 @@ spore_settlement_alaria+ plot_annotation(tag_levels = 'A')
 
 ### GERMINATING Analysis
 
+
 ```{r}
+# loading all germination data for alaria
+alaria_germination_all <- read.csv("data/alaria_germination.csv")
+```
+
+```{r}
+# loading colours for graph
+my_cols4 = c("A Control" = "purple1", "A Treatment" = "purple2", 
+             "B Control" = "lightgoldenrod1", "B Treatment" = "lightgoldenrod2")
+
+# making title so species name is italicized
+my_x_title_2 = expression(paste(italic("Alaria marginata"), " Treatments"))
+
+# loading graph to show germination
+alaria_germination = ggplot(alaria_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
+  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
+  geom_boxplot(alpha = 0.5) +
+  scale_color_manual(values = my_cols4) +
+  scale_fill_manual(values = my_cols4) + 
+  theme_classic() +
+  labs(x = my_x_title_2, y = "Proportion spores germinated") +
+  theme(axis.title = element_text(size = 13)) +
+  scale_x_discrete(labels = c("Control 1", "Treatment 1", 
+                              "Control 2", "Treatment 2")) + 
+  theme(legend.position = "None")
+
+# saving grpah
+ggsave(alaria_germination, filename = "alaria_germination.jpeg")
+
+```
+
+
+```{r}
+# loading only trial 1 germination data
 alaria_germination_trial_1 <- alaria_germination_all %>%
   filter(Treatment == "A Control" | Treatment == "A Treatment", .preserve = FALSE) 
 
+# loading only trial 2 germination data
 alaria_germination_trial_2 <- alaria_germination_all %>%
   filter(Treatment == "B Control" | Treatment == "B Treatment", .preserve = FALSE)
 ```
@@ -352,27 +562,24 @@ shapiro.test(alaria_germination_trial_2$Ratio)
 
 ```
 
-
 ```{r}
 # running a linear model on trial 1 germination proportion - assuming normality
 # numerical and categorical variable (ratio and treatment respectively)
 alaria_germinating_trial1.mod <- lm(Ratio ~ Treatment, 
                       data = alaria_germination_trial_1)
 summary(alaria_germinating_trial1.mod)
+# Adjusted R-squared:  0.01117 
+# F-statistic: 2.344 on 1 and 118 DF,  p-value: 0.1284
 ```
-Adjusted R-squared:  0.01117 
-F-statistic: 2.344 on 1 and 118 DF,  p-value: 0.1284
-
 
 ```{r}
 # running a linear model on trial 2 germination proportion - assuming normality
 alaria_germinating_trial2.mod <- lm(Ratio ~ Treatment, 
                       data = alaria_germination_trial_2)
 summary(alaria_germinating_trial2.mod)
+# Adjusted R-squared:  0.1071 
+# F-statistic: 15.15 on 1 and 117 DF,  p-value: 0.0001658
 ```
-Adjusted R-squared:  0.1071 
-F-statistic: 15.15 on 1 and 117 DF,  p-value: 0.0001658
-
 
 ```{r}
 var.test(Ratio ~ Treatment, alaria_germination_trial_1, 
@@ -385,170 +592,6 @@ var.test(Ratio ~ Treatment, alaria_germination_trial_2,
          
 ```
 
-
-
----------------------------------------------------------------------------
-
-###SPECIES COMPARISON
-
-```{r}
-# loading all data from both Alaria marginata and Macrocystis pyrifera
-all_data = read.csv("data/all_settlement_data.csv")
-
-# going into data and finding the 9 label names in the column Label so 
-# it is easier to assign a colour to each treatment
-library(tidyverse)
-library(dplyr)
-testerlabels <- all_data %>%
-  dplyr::select(Label) %>%
-  distinct
-
-testerlabels
-
-# Labels look like: M_A_Control - which refers to Macro control 1(which is 
-# actually trial 2 due to method change)
-# A_A_Control refers to control for sound trial 1-2 and A_B_Control refers to 
-# control for sound trial 3-4 
-my_cols_all = c("M_A_Control" = "orchid1", 
-             "M_B_Control"	= "palegreen2",
-             "M_A_Sound"	= "orchid1", 
-             "M_B_Sound"	= "palegreen2",	
-             "M_C_Sound"	= "palegreen2",	
-             "A_A_Control"	= "steelblue1", 
-             "A_B_Control"	= "sienna1", 	
-             "A_A_Sound"	= "steelblue1", 	
-             "A_B_Sound" = "sienna1")	
-
-# loading graph of all data - both species 
-# need to go back and represent in opposite order on y axis
-  ggplot(all_data, aes(y = Label, x = Settlement, fill = Label)) + 
-  geom_point(aes(colour = Label), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols_all) +
-  scale_fill_manual(values = my_cols_all) + 
-  theme_classic() +
-  labs(y = "Treatment", x = "Settlement") +
-  theme(axis.title = element_text(size = 10)) +
-  scale_y_discrete(labels = c("Alaria Control A", " Alaria Sound A", 
-                              "Alaria Control B", "Alaria Sound B",
-                              "Macro Control A", "Macro Sound A",
-                              "Macro Control B", "Macro Sound B.1", 
-                              "Macro Sound B.2")) +
-  theme(legend.position = "none")
-```
-
-```{r}
-# loading data again to make a second type of graph - figure out which one best
-# represents the model while comparing species!!
-all_data = read.csv("data/all_settlement_data.csv")
-
-# making all box titles - need to italicize species names
-x_title_control_alaria = expression(paste(italic("A.marginata"), " Control"))
-x_title_sound_alaria = expression(paste(italic("A.marginata"), " 20 kHz"))
-x_title_control_macro = expression(paste(italic("M.pyrifera"), " Control"))
-x_title_sound_macro = expression(paste(italic("M.pyrifera"), " 20 kHz"))
-
-# assigning colours
-my_cols_label.B = c("M_Control" = "steelblue3", 
-             "M_Sound"	= "steelblue2",
-             "A_Sound"	= "coral", 
-             "A_Control"	= "coral1")
-
-# loading the graph comparing species and all settlement
-  ggplot(all_data, aes(x = Label.B, y = Settlement, fill = Label.B)) + 
-  geom_point(aes(colour = Label.B), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  scale_color_manual(values = my_cols_label.B) +
-  scale_fill_manual(values = my_cols_label.B) + 
-  theme_classic() +
-  labs(x = "Treatment and Species", y = "Settlement") +
-  theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c(x_title_control_alaria , x_title_sound_alaria,
-                              x_title_control_macro, x_title_sound_macro)) +
-  theme(legend.position = "none")
-
-# I Like how this one presents the data!!
-```
-
-
-```{r}
-# loading data for all measurements 
-all_data = read.csv("data/all_settlement_data.csv")
-
-# making titles in which species names are italicized 
-my_x_title_alaria = expression(paste(italic("Alaria marginata")))
-my_x_title_macro = expression(paste(italic("Macrocystis pyrifera")))
-
-# loading the graph comparing species and all settlement
-  ggplot(all_data, aes(x = Species, y = Settlement, fill = Species)) + 
-  geom_point(aes(colour = Species), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.7) +
-  theme_classic() +
-  labs(x = "Species", y = "Total Settlement") +
-  theme(axis.title = element_text(size = 10)) +
-  scale_x_discrete(labels = c(my_x_title_alaria, my_x_title_macro)) +
-  theme(legend.position = "none")
-```
-
-```{r}
-# Checking for significant difference between treatments for each species 
-# ie the sound treatment settlement in Macro vs Alaria, and the same for controls
-
-# Treatment
-only_sound_both_species <- all_data %>%
-  filter(Treatment == "Sound", .preserve = FALSE) %>%
-  subset(select = c(Settlement, Species))
-
-# Control
-only_control_both_species <- all_data %>%
-  filter(Treatment == "Control", .preserve = FALSE) %>%
-  subset(select = c(Settlement, Species))
-```
-
-```{r}
-shapiro.test(only_sound_both_species$Settlement)
-```
-W = 0.76574, p-value = 4.548e-08
-NOT NORMAL
-
-*TRY TRANSFORMING DATA FIRST!! BEFORE MODELLING
-
-```{r}
-shapiro.test(only_control_both_species$Settlement)
-```
-W = 0.82702, p-value = 1.347e-06
-NOT NORMAL
-
-## NEED TO MODEL!!! NOT DONE HERE!!! SCREAMING
-
-
-
------------------------------------------------------------------------------
-
-### GERMINATION ANALYSIS
-
-```{r}
-alaria_germination_all <- read.csv("data/alaria_germination.csv")
-```
-
-```{r}
-my_cols4 = c("A Control" = "purple1", "A Treatment" = "purple2", 
-             "B Control" = "lightgoldenrod1", "B Treatment" = "lightgoldenrod2")
-
-my_x_title_2 = expression(paste(italic("Alaria marginata"), " Treatments"))
-
-ggplot(alaria_germination_all, aes(x = Treatment, y = Ratio, fill = Treatment)) + 
-  geom_point(aes(colour = Treatment), position = position_jitterdodge()) +
-  geom_boxplot(alpha = 0.5) +
-  scale_color_manual(values = my_cols4) +
-  scale_fill_manual(values = my_cols4) + 
-  theme_classic() +
-  labs(x = my_x_title_2, y = "Percent spores germinated") +
-  theme(axis.title = element_text(size = 13)) +
-  scale_x_discrete(labels = c("Control 1", "Treatment 1", 
-                              "Control 2", "Treatment 2"))
-
-```
 
 
 
