@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 ### Loading Libraries 
 ```{r}
@@ -198,7 +203,7 @@ alaria_trial_all_data <- all_data %>%
 
 # filtering data to only include trial 3 and 4 (they have the same control)
 alaria_trial3_4_data <- alaria_trial_all_data %>%
-  filter(Trial == "3" | Trial == "4", .preserve = FALSE)
+  filter(Trial.Number == "3" | Trial.Number == "4", .preserve = FALSE)
 
 ```
 
@@ -392,17 +397,17 @@ alaria_only_sound <- alaria_trial_all_data %>%
          | Treatment == "Sound D", .preserve = FALSE)
 
 # finding mean settlement for sound treatment
-mean(alaria_only_sound$Settlement.Rate)
-# 0.01336879
+mean(alaria_only_sound$Settlement)
+# 17.58385
 
 # filtering all data to only display settlement for control
 alaria_only_control <- alaria_trial_all_data %>%
   filter(Treatment == "Control A-B" | Treatment == "Control C-D", 
          .preserve = FALSE)
-
+ 
 # finding mean settlement for control
-mean(alaria_only_control$Settlement.Rate)
-# 0.01009165
+mean(alaria_only_control$Settlement)
+# 13.89024
 
 ```
 

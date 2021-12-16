@@ -2,7 +2,9 @@
 title: "Graphs + Stats for DS experiment"
 author: "Hannah Levit"
 date: "15/11/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r}
@@ -722,6 +724,9 @@ ggsave(macro_germination, filename = "macro_germination.jpeg")
 ### GERMINATING Analysis
 
 ```{r}
+# loading germination data
+macro_germination_all <- read.csv("data/macro_germination.csv")
+
 # filtering data so it is only germination data from treatment 1
 macro_germination_trial_1 <- macro_germination_all %>%
   filter(Treatment == "A Control" | Treatment == "A Treatment", .preserve = FALSE) 
@@ -760,18 +765,6 @@ macro_germinating_trial1.mod <- lm(Ratio ~ Treatment,
 summary(macro_germinating_trial1.mod)
 # Adjusted R-squared:  0.0007447 
 # p-value: 0.3071
-```
-
-
-
-```{r}
-# trying to fit the un-transformed data to a distribution
-fitDist(Ratio, data = macro_germination_trial_3, type = "realAll", try.gamlss = T) 
-#Family:  c("NET", "Normal Exponential t") 
-#Fitting method: "nlminb" 
-
-# visualizing the distribution in a histogram
-histDist(macro_germination_trial_3$Ratio, "NET")
 
 
 # running a linear model on trial 2 germination proportion - assuming normality
@@ -782,36 +775,43 @@ summary(macro_germinating_trial2.mod)
 # p-value: 0.1221
 ```
 
+```{r}
+# log transforming data to test for normality
+transformed_macro_germ_3 <- macro_germination_trial_3 %>%
+  filter(Ratio > 0) %>%
+  mutate(logRatio = log(Ratio))
+  
+
+# testing for normality of transformed data
+shapiro.test(transformed_macro_germ_3$logRatio)
+# normal
+```
+
 
 ```{r}
-# testing for normality of transformed data
-shapiro.test(transformed_macro_germ_3$Ratio)
-# W = 0.96522, p-value = 0.003578 
-# still not normal
+# running a linear model on trial 3 log germination proportion - assuming normality
+macro_germinating_trial3.mod <- lm(logRatio ~ Treatment, 
+                      data = transformed_macro_germ_3)
+summary(macro_germinating_trial3.mod)
+# Adjusted R-squared:  0.01793 
+# p-value: 0.1221
+
 ```
+
 
 
 ```{r}
 # running a variance test for trial 1
 var.test(Ratio ~ Treatment, macro_germination_trial_1, 
          alternative = "two.sided")
-# F = 0.99478, num df = 37, denom df = 39, p-value = 0.9895
-# 95 percent confidence interval: 0.5229668  1.9027493
-# sample estimates: 0.9947763 
 
 # running a variance test for trial 2     
 var.test(Ratio ~ Treatment, macro_germination_trial_2, 
          alternative = "two.sided")
-# F = 0.60716, num df = 39, denom df = 39, p-value = 0.1235
-# 95 percent confidence interval: 0.3211285   1.1479759
-# sample estimates: 0.6071637 
          
 # running a variance test for trial 3/4
-var.test(Ratio ~ Treatment, macro_germination_trial_3, 
-         alternative = "two.sided")
-# F = 2.7221, num df = 39, denom df = 78, p-value = 0.0001709
-# 95 percent confidence interval: 1.610807  4.840005
-# sample estimates: 2.722068 
+var.test(logRatio ~ Treatment, transformed_macro_germ_3, 
+         alternative = "two.sided") 
 
 ```
 

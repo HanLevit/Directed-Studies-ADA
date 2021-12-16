@@ -2,7 +2,9 @@
 title: "Species Comparison"
 author: "Hannah Levit"
 date: "14/12/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 ### Loading Libraries 
 ```{r}
@@ -50,7 +52,7 @@ my_cols_all = c("M_A_Control" = "orchid1",
 
 # loading graph of all data - both species 
 # need to go back and represent in opposite order on y axis
-  ggplot(all_data, aes(y = Label, x = Settlement.Rate, fill = Label)) + 
+  ggplot(all_data, aes(y = Label, x = Settlement, fill = Label)) + 
   geom_point(aes(colour = Label), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   scale_color_manual(values = my_cols_all) +
@@ -111,10 +113,10 @@ all_data = read.csv("data/all_settlement_data.csv")
 
 # making titles in which species names are italicized 
 my_x_title_alaria = expression(paste(italic("Alaria marginata")))
-my_x_title_macro = expression(paste(italic("Macrocystis pyrifera")))
+my_x_title_macro = expression(paste(italic("Macrocystis pyrifera"))) 
 
 # loading the graph comparing species and all settlement
-comparing_all_settlement = ggplot(all_data, aes(x = Species, y = Settlement.Rate, fill = Species)) + 
+comparing_all_settlement = ggplot(all_data, aes(x = Species, y = Settlement, fill = Species)) + 
   geom_point(aes(colour = Species), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   theme_classic() +
@@ -135,51 +137,49 @@ ggsave(comparing_all_settlement, file = "species_comparison_all_settlement.jpeg"
 # Treatment
 only_sound_both_species <- all_data %>%
   filter(Treatment.Simp == "Sound", .preserve = FALSE) %>%
-  subset(select = c(Settlement.Rate, Species))
+  subset(select = c(Settlement, Species))
 
 # Control
 only_control_both_species <- all_data %>%
   filter(Treatment.Simp == "Control", .preserve = FALSE) %>%
-  subset(select = c(Settlement.Rate, Species))
+  subset(select = c(Settlement, Species))
 ```
 
 ```{r}
 # testing for normality of species to species comparison of the effect of the treatment
-shapiro.test(only_sound_both_species$Settlement.Rate)
-# W = 0.7939, p-value < 2.2e-16
+shapiro.test(only_sound_both_species$Settlement)
 # not normal
 
 # log transforming the data to see if it normalizes it 
 transformed_only_sound <- only_sound_both_species %>%
-  mutate(logSettlementRate = log(Settlement.Rate))
+  mutate(logSettlement = log(Settlement))
 
 # testing for normality of transformed data
-shapiro.test(transformed_only_sound$logSettlementRate)
-# W = 0.90929, p-value = 5.788e-12
+shapiro.test(transformed_only_sound$logSettlement)
 # still not normal
 ```
 
 ```{r}
-ggplot(only_sound_both_species, aes(x = Species, y = Settlement.Rate, fill = Species)) + 
+ggplot(only_sound_both_species, aes(x = Species, y = Settlement, fill = Species)) + 
   geom_point(aes(colour = Species), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   theme_classic() +
-  labs(x = "Species - sound treatments", y = "Total Settlement") +
+  labs(x = "Species - sound", y = "Settlement") +
   theme(axis.title = element_text(size = 10)) +
   scale_x_discrete(labels = c(my_x_title_alaria, my_x_title_macro)) +
   theme(legend.position = "none")
 
 # trying to fit the un-transformed data to a distribution
-fitDist(Settlement.Rate, data = only_sound_both_species, type = "realAll", try.gamlss = T) 
-# Family:  c("PE2", "Power Exponential type 2") 
-# Fitting method: "nlminb" 
+fitDist(Settlement, data = only_sound_both_species, type = "realAll", try.gamlss = T) 
+# Family: c("SHASH", "Sinh-Arcsinh") 
+
 
 # visualizing the distribution in a histogram
-histDist(only_sound_both_species$Settlement.Rate, "PE2")
+histDist(only_sound_both_species$Settlement, "SHASH")
 
 # running a gamlss model on data - can't assume normality
-only_sound_both_species.mod <- gamlss(Settlement.Rate ~ Species, 
-                      data = only_sound_both_species, family = "PE2")
+only_sound_both_species.mod <- gamlss(Settlement ~ Species, 
+                      data = only_sound_both_species, family = "SHASH")
 summary(only_sound_both_species.mod)
 # p = <2e-16
 ```
@@ -187,41 +187,39 @@ summary(only_sound_both_species.mod)
 
 ```{r}
 # testing for normality in only controls of both species
-shapiro.test(only_control_both_species$Settlement.Rate)
-# W = 0.85734, p-value = 2.974e-11
+shapiro.test(only_control_both_species$Settlement)
 # not normal
 
 # log transforming the data to see if it normalizes it 
 transformed_only_control <- only_control_both_species %>%
-  mutate(logSettlementRate = log(Settlement.Rate))
+  mutate(logSettlement = log(Settlement))
 
 # testing for normality of transformed data
-shapiro.test(transformed_only_control$logSettlementRate)
-# W = 0.94341, p-value = 4.49e-06
+shapiro.test(transformed_only_control$logSettlement)
 # not normal
 ```
 
 ```{r}
-ggplot(only_control_both_species, aes(x = Species, y = Settlement.Rate, fill = Species)) + 
+ggplot(only_control_both_species, aes(x = Species, y = Settlement, fill = Species)) + 
   geom_point(aes(colour = Species), position = position_jitterdodge()) +
   geom_boxplot(alpha = 0.7) +
   theme_classic() +
-  labs(x = "Species - control", y = "Settlement Rate") +
+  labs(x = "Species - control", y = "Settlement") +
   theme(axis.title = element_text(size = 10)) +
   scale_x_discrete(labels = c(my_x_title_alaria, my_x_title_macro)) +
   theme(legend.position = "none")
 
 # trying to fit the un-transformed data to a distribution
-fitDist(Settlement.Rate, data = only_control_both_species, type = "realAll", try.gamlss = T) 
-# c("SHASH", "Sinh-Arcsinh") 
-# Fitting method: "nlminb"
+fitDist(Settlement, data = only_control_both_species, type = "realAll", try.gamlss = T) 
+# Family:  c("BCPE", "Box-Cox Power Exponential") 
+
 
 # visualizing the distribution in a histogram
-histDist(only_control_both_species$Settlement.Rate, "SHASH")
+histDist(only_control_both_species$Settlement, "BCPE")
 
 # running a gamlss model on data - can't assume normality
-only_control_both_species.mod <- gamlss(Settlement.Rate ~ Species, 
-                      data = only_control_both_species, family = "PE2")
+only_control_both_species.mod <- gamlss(Settlement ~ Species, 
+                      data = only_control_both_species, family = "BCPE")
 summary(only_control_both_species.mod)
 # p = <2e-16
 ```
